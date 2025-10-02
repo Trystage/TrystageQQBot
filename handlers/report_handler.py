@@ -39,6 +39,6 @@ async def handle_report_command(message_text, user_id, group_id, websocket):
         return True
     else:
         # 命令格式错误反馈
-        error_feedback = "命令格式错误！正确格式: /tbw report QQ号 原因\n示例: /tbw report 3289138258 喵喵喵"
+        error_feedback = "命令格式错误！正确格式: /try report QQ号 原因\n示例: /try report 3289138258 喵喵喵"
         await send_message(websocket, error_feedback, group_id=group_id)
         return False

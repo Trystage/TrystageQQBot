@@ -65,6 +65,6 @@ async def handle_mute_command(message_text, user_id, group_id, websocket):
         return True
     else:
         # 命令格式错误反馈
-        error_feedback = "命令格式错误！正确格式: /tbw mute QQ号 时长(秒) 原因\n示例: /tbw mute 3289138258 600 Advertising(劣质广告)"
+        error_feedback = "命令格式错误！正确格式: /try mute QQ号 时长(秒) 原因\n示例: /try mute 3289138258 600 Advertising(劣质广告)"
         await send_message(websocket, error_feedback, group_id=group_id)
         return False

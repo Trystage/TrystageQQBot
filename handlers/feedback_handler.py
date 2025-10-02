@@ -37,6 +37,6 @@ async def handle_feedback_command(message_text, user_id, group_id, websocket):
         return True
     else:
         # 命令格式错误反馈
-        error_feedback = "命令格式错误！正确格式: /tbw ref 反馈内容"
+        error_feedback = "命令格式错误！正确格式: /try ref 反馈内容"
         await send_message(websocket, error_feedback, group_id=group_id)
         return False
