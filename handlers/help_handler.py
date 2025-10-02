@@ -18,12 +18,15 @@ async def handle_help_command(message_text, user_id, group_id, message_type):
 管理员专用命令：
 /try announce <公告内容> - 发送公告到指定群组
 /try mute <QQ号> <时长(秒)> <原因> - 对指定用户进行禁言操作
+/try add (yinpa/join) [群号1] [群号2] ... - 添加银趴或入群事件处理群组
 
 使用示例：
 /try report @rootlaw03 刷屏
 /try ref 管理组变女仆!
 /try announce qq机器猫更新啦!
 /try mute 3289138258 600 Advertising - 禁言玩家3289138258 10分钟，原因：Advertising
+/try add yinpa 114514 1919810 - 添加银趴功能群组
+/try add join 114514 1919810 - 添加入群事件处理群组
 
 注意：您当前在管理员或测试群组中，可以使用所有命令。"""
     else:

@@ -26,6 +26,11 @@ def is_help_command(message_text):
     return message_text == "/try" or message_text.startswith("/try help")
 
 
+def is_add_group_command(message_text, group_id):
+    """检查是否为添加群组ID命令（仅限管理员群或测试群）"""
+    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try add")
+
+
 def is_yinpa_command(message_text):
     """检查是否为银趴命令"""
     yinpa_commands = ["yinpa_control", "银趴控制", "sign_in", "签到", "打卡", "info", "信息", "查询",

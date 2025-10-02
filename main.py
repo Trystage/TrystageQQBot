@@ -10,6 +10,7 @@ from commands.base_commands import (
     is_mute_command,
     is_report_command,
     is_help_command,
+    is_add_group_command,
     is_yinpa_command
 )
 from handlers.announcement_handler import handle_announce_command
@@ -17,10 +18,12 @@ from handlers.feedback_handler import handle_feedback_command
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command
 from handlers.help_handler import handle_help_command
+from handlers.group_handler import handle_add_group_command
 from handlers.joinchat_handler import handle_join_event
 from handlers.yinpa_handler import handle_yinpa_command
-from config import WEBSOCKET_HOST, WEBSOCKET_PORT, JOINCHAT_GROUP_IDS, YINPA_GROUP_IDS
+from config import WEBSOCKET_HOST, WEBSOCKET_PORT, GROUP_IDS
 from utils.websocket_utils import send_message
+from utils.file_utils import FileUtils
 
 
 async def handle_message(websocket):
@@ -62,10 +65,15 @@ async def handle_message(websocket):
                 elif is_help_command(message_text):
                     response_message = await handle_help_command(message_text, user_id, group_id, message_type)
 
+                # 处理添加群组ID命令
+                elif is_add_group_command(message_text, group_id):
+                    await handle_add_group_command(message_text, user_id, group_id, message_type, websocket)
+                    # 响应由handle_add_group_command内部处理，不需要额外的response_message
+
                 # 处理银趴命令
                 elif is_yinpa_command(message_text):
                     group_id = data.get("group_id", None)
-                    if group_id in YINPA_GROUP_IDS:
+                    if group_id in GROUP_IDS.YINPA_GROUP_IDS:
                         await handle_yinpa_command(message_text, str(user_id), str(group_id), message_type, websocket)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
 
@@ -78,7 +86,7 @@ async def handle_message(websocket):
             elif "post_type" in data and data["post_type"] == "notice":
                 # 只对配置列表中的群组ID作出反应
                 group_id = data.get("group_id", None)
-                if group_id in JOINCHAT_GROUP_IDS:
+                if group_id in GROUP_IDS.JOINCHAT_GROUP_IDS:
                     # 处理群成员加入事件
                     await handle_join_event(data, websocket)
 
@@ -103,6 +111,9 @@ async def on_connect(websocket, path):
 
 # 启动服务器
 async def main():
+    # 初始化数据文件
+    FileUtils.initialize_data_files()
+    
     start_server = await websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT)
     print("WebSocket 服务器已启动")
     print(f"运行在ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}/ws")
