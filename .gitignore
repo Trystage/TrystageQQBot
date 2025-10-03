@@ -2,3 +2,6 @@
 /.idea
 *.pyc
 /.idea
+data/groups.json
+/data
+/cache
