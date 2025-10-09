@@ -6,9 +6,9 @@ from PIL import Image,ImageDraw,ImageFont
 from math import sqrt
 
 from config import CACHE_DIR
-from data_handles import data,configdata,DHandles
-from dicts import dicts
-from yinpa_config import Config
+from .data_handles import data,configdata,DHandles
+from .dicts import dicts
+from .yinpa_config import Config
 
 plugin_config = Config()
 

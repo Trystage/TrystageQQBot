@@ -3,10 +3,10 @@ import time
 from hashlib import md5
 from math import sqrt
 
-from data_handles import data,configdata,DHandles
-from yinpa_config import Config
-from utils import Utils
-from dicts import dicts
+from .data_handles import data,configdata,DHandles
+from .yinpa_config import Config
+from .utils import Utils
+from .dicts import dicts
 
 plugin_config = Config
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from time import time
 
 from config import CACHE_DIR
-from dicts import dicts
+from .dicts import dicts
 
 plugin_data_file: Path = Path(__file__).parent / "storage" / "data.json"
 plugin_config_file: Path = Path(__file__).parent / "storage" / "config.json"
