@@ -1,4 +1,4 @@
-from yinpa_config import FONT_FILE
+from config import FONT_FILE
 
 class Config():
     chikari_yinpa_initial_sex_value: int = 50
