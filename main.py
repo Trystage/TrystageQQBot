@@ -33,7 +33,7 @@ async def handle_message(websocket):
     async for message in websocket:
         try:
             data = json.loads(message)
-            
+            print(f"收到消息:  {data}")
             # 处理消息类型
             if "post_type" in data and data["post_type"] == "message":
                 user_id = data["user_id"]
