@@ -11,7 +11,7 @@ from commands.base_commands import (
     is_report_command,
     is_help_command,
     is_add_group_command,
-    is_yinpa_command
+    is_yinpa_command, is_remove_group_command
 )
 from handlers.announcement_handler import handle_announce_command
 from handlers.chat_handler import handle_chat
@@ -69,6 +69,10 @@ async def handle_message(websocket):
                 # 处理添加群组ID命令
                 elif is_add_group_command(message_text, group_id):
                     await handle_add_group_command(message_text, user_id, group_id, message_type, websocket)
+                    # 响应由handle_add_group_command内部处理，不需要额外的response_message
+                # 处理添加群组ID命令
+                elif is_remove_group_command(message_text, group_id):
+                    await handle_remove_group_command(message_text, user_id, group_id, message_type, websocket)
                     # 响应由handle_add_group_command内部处理，不需要额外的response_message
 
                 # 处理银趴命令
