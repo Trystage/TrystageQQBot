@@ -14,6 +14,7 @@ from commands.base_commands import (
     is_yinpa_command
 )
 from handlers.announcement_handler import handle_announce_command
+from handlers.chat_handler import handle_chat
 from handlers.feedback_handler import handle_feedback_command
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command
@@ -76,6 +77,8 @@ async def handle_message(websocket):
                     if group_id in GROUP_IDS.YINPA_GROUP_IDS:
                         await handle_yinpa_command(message_text, str(user_id), str(group_id), message_type, websocket)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
+                else:
+                    await handle_chat(message_text, user_id, group_id, message_type, websocket)
 
                 # 发送响应消息（如果有的话）
                 if response_message:
