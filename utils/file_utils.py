@@ -64,6 +64,12 @@ class FileUtils:
         return data.get("yinpa_group_ids", [])
 
     @staticmethod
+    def get_black_group_ids() -> List[int]:
+        """获取黑名单的群组ID列表"""
+        data = FileUtils.load_groups_data()
+        return data.get("black_group_ids", [])
+
+    @staticmethod
     def add_joinchat_group_id(group_id: int):
         """添加入群事件处理群组ID"""
         data = FileUtils.load_groups_data()
@@ -80,6 +86,14 @@ class FileUtils:
             FileUtils.save_groups_data(data)
 
     @staticmethod
+    def add_black_group_id(group_id: int):
+        """添加黑名单群组ID"""
+        data = FileUtils.load_groups_data()
+        if group_id not in data["black_group_ids"]:
+            data["black_group_ids"].append(group_id)
+            FileUtils.save_groups_data(data)
+
+    @staticmethod
     def remove_joinchat_group_id(group_id: int):
         """移除入群事件处理群组ID"""
         data = FileUtils.load_groups_data()
@@ -93,4 +107,12 @@ class FileUtils:
         data = FileUtils.load_groups_data()
         if group_id in data["yinpa_group_ids"]:
             data["yinpa_group_ids"].remove(group_id)
+            FileUtils.save_groups_data(data)
+
+    @staticmethod
+    def remove_black_group_id(group_id: int):
+        """移除黑名单群组ID"""
+        data = FileUtils.load_groups_data()
+        if group_id in data["black_group_ids"]:
+            data["black_group_ids"].remove(group_id)
             FileUtils.save_groups_data(data)
