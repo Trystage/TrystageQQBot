@@ -1,5 +1,5 @@
-# 项目配置文件
 from pathlib import Path
+PROJECT_ROOT = Path(__file__).parent
 
 # WebSocket服务器配置
 WEBSOCKET_HOST = "0.0.0.0"
@@ -10,19 +10,14 @@ ADMIN_GROUP_ID = 695789887
 TARGET_GROUP_ID = 533050694
 BACKUP_GROUP_ID = 695789887
 TEST_GROUP_ID = 695789887
-
+# 机器猫主人www
 SUPER_USER = [3289138258, 728722384, 3654280169, 2257104941]
-
-PROJECT_ROOT = Path(__file__).parent
 
 # 资源目录
 RESOURCE_DIR = str(PROJECT_ROOT / "resource")
 
 # 资源文件路径
 FONT_FILE = str(PROJECT_ROOT / "resource" / "SourceHanSansSC-VF.ttf")
-
-# API密钥文件路径
-API_KEY_FILE = str(PROJECT_ROOT / "resource" / "key")
 
 # 缓存目录
 CACHE_DIR = str(PROJECT_ROOT / "cache")
