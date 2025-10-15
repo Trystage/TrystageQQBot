@@ -97,6 +97,7 @@ async def handle_message(websocket):
                 group_id = data.get("group_id", None)
                 user_id = data.get("user_id", None)
                 noticetype = data.get("notice_type", None)
+                subtype = data.get("subtype", None)
 
                 print(f"通知类型: {noticetype}, 群号: {group_id}, 用户ID: {user_id}")
 
@@ -107,7 +108,7 @@ async def handle_message(websocket):
                     if group_id in GROUP_IDS.JOINCHAT_GROUP_IDS:
                         # 处理群成员加入事件
                         await handle_join_event(user_id, group_id, websocket)
-                if noticetype == "poke":
+                if subtype == "poke":
                     target_id = data.get("target_id", None)
                     if target_id == self_id:
                         await handle_poke_neko(group_id, user_id,target_id, websocket)
