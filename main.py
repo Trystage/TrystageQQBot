@@ -16,6 +16,7 @@ from commands.base_commands import (
 from handlers.announcement_handler import handle_announce_command
 from handlers.chat_handler import handle_chat
 from handlers.feedback_handler import handle_feedback_command
+from handlers.pokeneko_handler import handle_poke_neko
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command
 from handlers.help_handler import handle_help_command
@@ -34,6 +35,7 @@ async def handle_message(websocket):
         try:
             data = json.loads(message)
             print(f"收到消息:  {data}")
+            self_id = data.get("self_id")
             # 处理消息类型
             if "post_type" in data and data["post_type"] == "message":
                 user_id = data["user_id"]
@@ -91,11 +93,24 @@ async def handle_message(websocket):
             
             # 处理通知类型（如群成员加入）
             elif "post_type" in data and data["post_type"] == "notice":
-                # 只对配置列表中的群组ID作出反应
+
                 group_id = data.get("group_id", None)
-                if group_id in GROUP_IDS.JOINCHAT_GROUP_IDS:
-                    # 处理群成员加入事件
-                    await handle_join_event(data, websocket)
+                user_id = data.get("user_id", None)
+                noticetype = data.get("notice_type", None)
+
+                print(f"通知类型: {noticetype}, 群号: {group_id}, 用户ID: {user_id}")
+
+                # 检查是否为群成员增加通知
+                if noticetype == "group_increase":
+                    # 只对配置列表中的群组ID作出反应
+                    group_id = data.get("group_id", None)
+                    if group_id in GROUP_IDS.JOINCHAT_GROUP_IDS:
+                        # 处理群成员加入事件
+                        await handle_join_event(user_id, group_id, websocket)
+                if noticetype == "poke":
+                    target_id = data.get("target_id", None)
+                    if target_id == self_id:
+                        await handle_poke_neko(group_id, user_id,target_id, websocket)
 
         except Exception as e:
             print(f"处理消息时出错: {e}")

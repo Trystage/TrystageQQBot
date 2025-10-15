@@ -122,56 +122,48 @@ async def create_welcome_image(user_id, user_name):
         print(f"创建欢迎图片时出错: {e}")
         return None
 
-async def handle_join_event(data, websocket):
+async def handle_join_event(user_id, group_id, websocket):
     """处理群成员加入事件"""
     try:
-        group_id = data.get("group_id", None)
-        user_id = data.get("user_id", None)
-        noticetype = data.get("notice_type", None)
-        
-        print(f"通知类型: {noticetype}, 群号: {group_id}, 用户ID: {user_id}")
-        
-        # 检查是否为群成员增加通知
-        if noticetype == "group_increase":
-            print(f"新成员加入: user_id={user_id}, group_id={group_id}")
-            
-            # 获取用户名
-            user_name = f"({user_id})"  # 默认使用ID
-            try:
-                print("正在获取用户信息...")
-                async with aiohttp.ClientSession() as session:
-                    # 注意：这里可能需要根据实际的API地址进行调整
-                    async with session.get(f'http://127.0.0.1:3000/get_stranger_info?user_id={user_id}') as resp:
-                        print(f"获取用户信息响应状态: {resp.status}")
-                        if resp.status == 200:
-                            user_info = await resp.json()
-                            print(f"用户信息: {user_info}")
-                            if user_info.get('retcode') == 0:
-                                user_name = user_info['data']['nickname']
-                                print(f"获取到用户名: {user_name}")
-                            else:
-                                print(f"获取用户信息失败，错误码: {user_info.get('retcode')}")
-            except Exception as e:
-                print(f"获取用户信息时出错: {e}")
-            
-            # 创建欢迎图片
-            print("开始创建欢迎图片...")
-            output_image_path = await create_welcome_image(user_id, user_name)
-            
-            if output_image_path:
-                print("图片创建成功，准备发送消息")
-                # 构建包含图片的消息 - 使用本地文件路径
-                message_content = f"[CQ:image,file=file:///{output_image_path}]"
-            else:
-                print("图片创建失败，使用文本消息")
-                # 如果图片生成失败，使用文本消息
-                message_content = f"欢迎新成员{user_name}加入群聊~"
-            
-            print(f"最终消息内容: {message_content}")
-            
-            # 发送欢迎消息到群组
-            await send_message(websocket, message_content, group_id=group_id)
-            print("欢迎消息已发送")
+        print(f"新成员加入: user_id={user_id}, group_id={group_id}")
+
+        # 获取用户名
+        user_name = f"({user_id})"  # 默认使用ID
+        try:
+            print("正在获取用户信息...")
+            async with aiohttp.ClientSession() as session:
+                # 注意：这里可能需要根据实际的API地址进行调整
+                async with session.get(f'http://127.0.0.1:3000/get_stranger_info?user_id={user_id}') as resp:
+                    print(f"获取用户信息响应状态: {resp.status}")
+                    if resp.status == 200:
+                        user_info = await resp.json()
+                        print(f"用户信息: {user_info}")
+                        if user_info.get('retcode') == 0:
+                            user_name = user_info['data']['nickname']
+                            print(f"获取到用户名: {user_name}")
+                        else:
+                            print(f"获取用户信息失败，错误码: {user_info.get('retcode')}")
+        except Exception as e:
+            print(f"获取用户信息时出错: {e}")
+
+        # 创建欢迎图片
+        print("开始创建欢迎图片...")
+        output_image_path = await create_welcome_image(user_id, user_name)
+
+        if output_image_path:
+            print("图片创建成功，准备发送消息")
+            # 构建包含图片的消息 - 使用本地文件路径
+            message_content = f"[CQ:image,file=file:///{output_image_path}]"
+        else:
+            print("图片创建失败，使用文本消息")
+            # 如果图片生成失败，使用文本消息
+            message_content = f"欢迎新成员{user_name}加入群聊~"
+
+        print(f"最终消息内容: {message_content}")
+
+        # 发送欢迎消息到群组
+        await send_message(websocket, message_content, group_id=group_id)
+        print("欢迎消息已发送")
 
     except Exception as e:
         print(f"处理入群事件时出错: {e}")
