@@ -25,6 +25,11 @@ CACHE_DIR = str(PROJECT_ROOT / "cache")
 # 日志目录
 LOGS_DIR = str(PROJECT_ROOT / "logs")
 
+# 拍一拍回复
+POKE_SU_ANS = ["喵~❤", "喵呜~(蹭", "唔~(蹭手", "(靠近扑倒", "呜喵~❤"]
+POKE_ANS = ["喵~", "喵呜~", "咪嗷~", "呜喵~", "呼噜呼噜"]
+
+
 # 延迟加载群组ID配置，避免循环导入
 def get_joinchat_group_ids():
     from utils.file_utils import FileUtils
