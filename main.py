@@ -19,7 +19,7 @@ from handlers.feedback_handler import handle_feedback_command
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command
 from handlers.help_handler import handle_help_command
-from handlers.group_handler import handle_add_group_command
+from handlers.group_handler import handle_add_group_command, handle_remove_group_command
 from handlers.joinchat_handler import handle_join_event
 from handlers.yinpa_handler import handle_yinpa_command
 from config import WEBSOCKET_HOST, WEBSOCKET_PORT, GROUP_IDS
