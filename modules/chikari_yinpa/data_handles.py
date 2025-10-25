@@ -165,7 +165,7 @@ class DHandles():
         
         global data
         b = False
-        for i in range(len(data[uid]["skill"])):
+        for i in range(len(data[uid]["skill"]) - 1, -1, -1):
             if data[uid]["skill"][i][0] == id:
                 data[uid]["skill"][i][1] = value
                 if len(data[uid]["skill"][i]) >= 3:
