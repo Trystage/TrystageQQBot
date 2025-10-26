@@ -26,7 +26,7 @@ CACHE_DIR = str(PROJECT_ROOT / "cache")
 LOGS_DIR = str(PROJECT_ROOT / "logs")
 
 # 拍一拍回复
-POKE_SU_ANS = ["喵~❤", "喵呜~(蹭", "唔~(蹭手", "(靠近扑倒", "呜喵~❤"]
+POKE_SU_ANS = ["喵~❤", "喵呜~(蹭", "唔~(蹭手", "呼噜呼噜(蹭", "呜喵~❤", "喵嗷~❤"]
 POKE_ANS = ["喵~", "喵呜~", "咪嗷~", "呜喵~", "呼噜呼噜"]
 
 
