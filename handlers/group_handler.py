@@ -18,7 +18,7 @@ async def handle_add_group_command(message_text, user_id, group_id, message_type
     # 检查命令格式
     if len(parts) < 3:
         await send_message(websocket,
-                           "错误：命令格式不正确\n正确格式：/try add (yinpa/join/black) [群号1] [群号2] ...\n例如：/try add yinpa 114514 1919810",
+                           "错误：命令格式不正确\n正确格式：/try add (yinpa/join/black/jm) [群号1] [群号2] ...\n例如：/try add yinpa 114514 1919810",
                            user_id, group_id)
         return
 
@@ -26,8 +26,8 @@ async def handle_add_group_command(message_text, user_id, group_id, message_type
     command_type = parts[2]
 
     # 检查命令类型是否有效
-    if command_type not in ["yinpa", "join"]:
-        await send_message(websocket, "错误：命令类型不正确，只能是 yinpa, black 或 join", user_id, group_id)
+    if command_type not in ["yinpa", "join", "black", "jm"]:
+        await send_message(websocket, "错误：命令类型不正确，只能是 yinpa, black, jm 或 join", user_id, group_id)
         return
 
     # 获取要添加的群组ID列表
@@ -49,6 +49,8 @@ async def handle_add_group_command(message_text, user_id, group_id, message_type
                 FileUtils.add_joinchat_group_id(gid)
             elif command_type == "black":
                 FileUtils.add_black_group_id(gid)
+            elif command_type == "jm":
+                FileUtils.add_jm_group_id(gid)
             added_groups.append(str(gid))
         except Exception as e:
             failed_groups.append(f"{gid} ({str(e)})")
@@ -69,6 +71,8 @@ async def handle_add_group_command(message_text, user_id, group_id, message_type
         current_groups = GROUP_IDS.JOINCHAT_GROUP_IDS
     elif command_type == "black":
         current_groups = GROUP_IDS.BLACK_GROUP_IDS
+    elif command_type == "jm":
+        current_groups = GROUP_IDS.JM_GROUP_IDS
 
     response_message += f"\n当前{command_type}群组列表：{', '.join(map(str, current_groups))}"
 
@@ -88,15 +92,15 @@ async def handle_remove_group_command(message_text, user_id, group_id, message_t
 
     # 检查命令格式
     if len(parts) < 3:
-        await send_message(websocket, "错误：命令格式不正确\n正确格式：/try rem (yinpa/join/black) [群号1] [群号2] ...\n例如：/try rem yinpa 114514 1919810", user_id, group_id)
+        await send_message(websocket, "错误：命令格式不正确\n正确格式：/try rem (yinpa/join/black/jm) [群号1] [群号2] ...\n例如：/try rem yinpa 114514 1919810", user_id, group_id)
         return
 
     # 获取命令类型（yinpa或join）
     command_type = parts[2]
 
     # 检查命令类型是否有效
-    if command_type not in ["yinpa", "join", "black"]:
-        await send_message(websocket, "错误：命令类型不正确，只能是 yinpa, black 或 join", user_id, group_id)
+    if command_type not in ["yinpa", "join", "black", "jm"]:
+        await send_message(websocket, "错误：命令类型不正确，只能是 yinpa, black, jm 或 join", user_id, group_id)
         return
 
     # 获取要添加的群组ID列表
@@ -118,6 +122,8 @@ async def handle_remove_group_command(message_text, user_id, group_id, message_t
                 FileUtils.remove_joinchat_group_id(gid)
             elif command_type == "black":
                 FileUtils.remove_black_group_id(gid)
+            elif command_type == "jm":
+                FileUtils.remove_jm_group_id(gid)
             removed_groups.append(str(gid))
         except Exception as e:
             failed_groups.append(f"{gid} ({str(e)})")
@@ -138,6 +144,8 @@ async def handle_remove_group_command(message_text, user_id, group_id, message_t
         current_groups = GROUP_IDS.JOINCHAT_GROUP_IDS
     elif command_type == "black":
         current_groups = GROUP_IDS.BLACK_GROUP_IDS
+    elif command_type == "jm":
+        current_groups = GROUP_IDS.JM_GROUP_IDS
 
     response_message += f"\n当前{command_type}群组列表：{', '.join(map(str, current_groups))}"
 

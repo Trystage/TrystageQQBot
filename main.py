@@ -11,11 +11,13 @@ from commands.base_commands import (
     is_report_command,
     is_help_command,
     is_add_group_command,
-    is_yinpa_command, is_remove_group_command
+    is_yinpa_command, is_remove_group_command,
+    is_jm_command
 )
 from handlers.announcement_handler import handle_announce_command
 from handlers.chat_handler import handle_chat
 from handlers.feedback_handler import handle_feedback_command
+from handlers.jm_handler import handle_jm_command
 from handlers.pokeneko_handler import handle_poke_neko
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command
@@ -82,6 +84,13 @@ async def handle_message(websocket):
                     group_id = data.get("group_id", None)
                     if group_id in GROUP_IDS.YINPA_GROUP_IDS:
                         await handle_yinpa_command(message_text, str(user_id), str(group_id), message_type, websocket)
+                    # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
+
+                # 处理银趴命令
+                elif is_jm_command(message_text):
+                    group_id = data.get("group_id", None)
+                    if group_id in GROUP_IDS.JM_GROUP_IDS:
+                        await handle_jm_command(message_text, str(user_id), str(group_id), message_type, websocket)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
                 else:
                     await handle_chat(message_text, user_id, group_id, message_type, websocket)

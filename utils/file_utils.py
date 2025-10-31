@@ -21,7 +21,8 @@ class FileUtils:
         if not os.path.exists(GROUPS_FILE):
             default_data = {
                 "joinchat_group_ids": [533050694, 695789887],
-                "yinpa_group_ids": [533050694, 695789887, 478943760]
+                "yinpa_group_ids": [533050694, 695789887, 478943760],
+                "jm_group_ids": [533050694, 695789887, 478943760]
             }
             FileUtils.save_groups_data(default_data)
 
@@ -36,7 +37,8 @@ class FileUtils:
             # 如果文件不存在或解析失败，返回默认数据
             default_data = {
                 "joinchat_group_ids": [533050694, 695789887],
-                "yinpa_group_ids": [533050694, 695789887, 478943760]
+                "yinpa_group_ids": [533050694, 695789887, 478943760],
+                "jm_group_ids": [533050694, 695789887, 478943760]
             }
             FileUtils.save_groups_data(default_data)
             return default_data
@@ -68,6 +70,11 @@ class FileUtils:
         """获取黑名单的群组ID列表"""
         data = FileUtils.load_groups_data()
         return data.get("black_group_ids", [])
+    @staticmethod
+    def get_jm_group_ids() -> List[int]:
+        """获取黑名单的群组ID列表"""
+        data = FileUtils.load_groups_data()
+        return data.get("jm_group_ids", [])
 
     @staticmethod
     def add_joinchat_group_id(group_id: int):
@@ -94,6 +101,14 @@ class FileUtils:
             FileUtils.save_groups_data(data)
 
     @staticmethod
+    def add_jm_group_id(group_id: int):
+        """添加黑名单群组ID"""
+        data = FileUtils.load_groups_data()
+        if group_id not in data["jm_group_ids"]:
+            data["jm_group_ids"].append(group_id)
+            FileUtils.save_groups_data(data)
+
+    @staticmethod
     def remove_joinchat_group_id(group_id: int):
         """移除入群事件处理群组ID"""
         data = FileUtils.load_groups_data()
@@ -115,4 +130,12 @@ class FileUtils:
         data = FileUtils.load_groups_data()
         if group_id in data["black_group_ids"]:
             data["black_group_ids"].remove(group_id)
+            FileUtils.save_groups_data(data)
+
+    @staticmethod
+    def remove_jm_group_id(group_id: int):
+        """移除黑名单群组ID"""
+        data = FileUtils.load_groups_data()
+        if group_id in data["jm_group_ids"]:
+            data["jm_group_ids"].remove(group_id)
             FileUtils.save_groups_data(data)

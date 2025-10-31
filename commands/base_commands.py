@@ -43,3 +43,7 @@ def is_yinpa_command(message_text):
                       "kou", "扣", "扣扣", "自慰", "紫薇", "shop", "商店", "买", "买东西", "店",
                       "work", "工作", "打工", "yinpa_test"]
     return any(message_text.startswith(cmd) for cmd in yinpa_commands)
+
+def is_jm_command(message_text):
+    jm_commands = ["jmz", "jm", "jmc", "jmzip", "jmcomiczip", "jmczip", "jmcomic"]
+    return any(message_text.startswith(cmd) for cmd in jm_commands)

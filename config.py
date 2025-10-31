@@ -43,6 +43,10 @@ def get_black_group_ids():
     from utils.file_utils import FileUtils
     return FileUtils.get_black_group_ids()
 
+def get_jm_group_ids():
+    from utils.file_utils import FileUtils
+    return FileUtils.get_jm_group_ids()
+
 # 使用属性延迟加载群组ID
 class _GroupIds:
     @property
@@ -56,5 +60,9 @@ class _GroupIds:
     @property
     def BLACK_GROUP_IDS(self):
         return get_black_group_ids()
+
+    @property
+    def JM_GROUP_IDS(self):
+        return get_jm_group_ids()
 
 GROUP_IDS = _GroupIds()
