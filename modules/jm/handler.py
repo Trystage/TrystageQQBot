@@ -3,7 +3,7 @@ import os
 import asyncio
 
 from utils.websocket_utils import send_message
-from .jm_downloader import JM_DOWNLOAD_DIR
+from config import JM_DOWNLOAD_DIR
 from .jm_downloader import (
     get_option,
     download_album_by_id,

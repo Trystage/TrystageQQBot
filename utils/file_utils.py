@@ -1,10 +1,10 @@
 import json
 import os
 from typing import List, Dict, Any
-from config import PROJECT_ROOT
+
+from config import PROJECT_ROOT, JM_CONFIG_FILE, JM_DOWNLOAD_DIR, DATA_DIR
 
 # 定义数据文件路径
-DATA_DIR = PROJECT_ROOT / "data"
 GROUPS_FILE = DATA_DIR / "groups.json"
 
 
@@ -139,3 +139,44 @@ class FileUtils:
         if group_id in data["jm_group_ids"]:
             data["jm_group_ids"].remove(group_id)
             FileUtils.save_groups_data(data)
+
+
+def create_default_jm_config():
+    """创建默认配置文件，直接使用项目变量"""
+    default_config = f"""client:
+cache: null
+domain:
+html:
+  - 18comic.org
+api:
+  - www.cdnmhwscc.vip
+  - www.cdnblackmyth.club
+  - www.cdnmhws.cc
+  - www.cdnuc.vip
+impl: api
+postman:
+meta_data:
+  headers: null
+  impersonate: chrome110
+  proxies: {{}}
+type: cffi
+retry_times: 2
+dir_rule:
+base_dir: {str(JM_DOWNLOAD_DIR)}
+rule: Bd_Pname
+download:
+cache: true
+image:
+decode: true
+suffix: null
+threading:
+image: 30
+photo: 16
+log: true
+plugins:
+valid: log
+version: '2.1'"""
+    with open(JM_CONFIG_FILE, 'w', encoding='utf-8') as f:
+        f.write(default_config)
+
+    print(f"已创建默认JM配置文件: {JM_CONFIG_FILE}")

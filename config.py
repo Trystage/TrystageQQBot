@@ -1,4 +1,6 @@
 from pathlib import Path
+
+
 PROJECT_ROOT = Path(__file__).parent
 
 # WebSocket服务器配置
@@ -13,6 +15,8 @@ TEST_GROUP_ID = 695789887
 # 机器猫主人www
 SUPER_USER = [3289138258, 728722384, 3654280169, 2257104941]
 
+# 数据目录
+DATA_DIR = PROJECT_ROOT / "data"
 # 资源目录
 RESOURCE_DIR = str(PROJECT_ROOT / "resource")
 
@@ -28,7 +32,6 @@ LOGS_DIR = str(PROJECT_ROOT / "logs")
 # 拍一拍回复
 POKE_SU_ANS = ["喵~❤", "喵呜~(蹭", "唔~(蹭手", "呼噜呼噜(蹭", "呜喵~❤", "喵嗷~❤"]
 POKE_ANS = ["喵~", "喵呜~", "咪嗷~", "呜喵~", "呼噜呼噜"]
-
 
 # 延迟加载群组ID配置，避免循环导入
 def get_joinchat_group_ids():
@@ -66,3 +69,5 @@ class _GroupIds:
         return get_jm_group_ids()
 
 GROUP_IDS = _GroupIds()
+JM_CONFIG_FILE = Path(RESOURCE_DIR) / "jm_config.yml"
+JM_DOWNLOAD_DIR = Path(DATA_DIR) / "jm_download"

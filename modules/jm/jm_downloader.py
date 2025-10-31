@@ -4,13 +4,14 @@ from pathlib import Path
 import asyncio
 from jmcomic import create_option, download_album
 
-from config import CACHE_DIR
-
-JM_CONFIG_FILE = Path(CACHE_DIR) / "jm_config.yml"
-JM_DOWNLOAD_DIR = Path(CACHE_DIR) / "jm_download"
+from config import CACHE_DIR, RESOURCE_DIR, JM_CONFIG_FILE, JM_DOWNLOAD_DIR
+from utils.file_utils import create_default_jm_config
 
 
 def get_option():
+
+    if not JM_CONFIG_FILE.exists() or JM_CONFIG_FILE.stat().st_size == 0:
+        create_default_jm_config()
     return create_option(str(JM_CONFIG_FILE))
 
 
