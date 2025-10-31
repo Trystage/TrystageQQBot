@@ -654,7 +654,10 @@ class Utils:
                     DHandles.state_refresh(uid,1,time() + 10 * 60)
                     str += f"{data[uid]['name']}失神了！失神状态将持续{10}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
         elif id == 16:
-                    str += DHandles.state_refresh(uid,4,time() + 60 * 60)
+            if not Utils.get_state(uid, 4):
+                str += DHandles.state_refresh(uid,4,time() + 60 * 60)
+            else:
+                str += DHandles.state_refresh(uid,4,Utils.get_state(uid, 4)[1] + 60 * 60)
         return str
     
     # async def get_group_yinpa_list(bid: str,gid: int):

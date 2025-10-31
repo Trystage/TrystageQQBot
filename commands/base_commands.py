@@ -32,7 +32,7 @@ def is_add_group_command(message_text, group_id):
 
 def is_remove_group_command(message_text, group_id):
     """检查是否为添加群组ID命令（仅限管理员群或测试群）"""
-    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try remove")
+    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try rem")
 
 
 def is_yinpa_command(message_text):

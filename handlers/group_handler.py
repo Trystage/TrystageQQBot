@@ -95,7 +95,7 @@ async def handle_remove_group_command(message_text, user_id, group_id, message_t
     command_type = parts[2]
 
     # 检查命令类型是否有效
-    if command_type not in ["yinpa", "join"]:
+    if command_type not in ["yinpa", "join", "black"]:
         await send_message(websocket, "错误：命令类型不正确，只能是 yinpa, black 或 join", user_id, group_id)
         return
 
