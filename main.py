@@ -87,11 +87,12 @@ async def handle_message(websocket):
                         await handle_yinpa_command(message_text, str(user_id), str(group_id), message_type, websocket)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
 
-                # 处理银趴命令
+                # 处理jm命令
                 elif is_jm_command(message_text):
                     group_id = data.get("group_id", None)
                     if group_id in GROUP_IDS.JM_GROUP_IDS:
-                        await handle_jm_command(message_text, str(user_id), str(group_id), message_type, websocket)
+                        # await handle_jm_command(message_text, str(user_id), str(group_id), message_type, websocket)
+                        await send_message(websocket, "jm没写好qwq, 卡爆了, 先关了qwq", user_id, group_id)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
                 else:
                     await handle_chat(message_text, user_id, group_id, message_type, websocket)
