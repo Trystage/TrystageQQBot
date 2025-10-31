@@ -3,3 +3,4 @@ aiohttp>=3.8.0
 Pillow>=9.0.0
 requests>=2.28.0
 pydantic>=1.10.0
+jmcomic<=2.6.10

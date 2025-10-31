@@ -6,8 +6,8 @@ from jmcomic import create_option, download_album
 
 from config import CACHE_DIR
 
-JM_CONFIG_FILE = CACHE_DIR / "jm_config.yml"
-JM_DOWNLOAD_DIR = CACHE_DIR / "jm_download"
+JM_CONFIG_FILE = os.path.join(CACHE_DIR, "jm_config.yml")
+JM_DOWNLOAD_DIR = os.path.join(CACHE_DIR, "jm_download")
 
 
 def get_option():
