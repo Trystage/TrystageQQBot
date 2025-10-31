@@ -26,6 +26,7 @@ from handlers.group_handler import handle_add_group_command, handle_remove_group
 from handlers.joinchat_handler import handle_join_event
 from handlers.yinpa_handler import handle_yinpa_command
 from config import WEBSOCKET_HOST, WEBSOCKET_PORT, GROUP_IDS
+from utils.misc_utils import truncate_error_message
 from utils.websocket_utils import send_message
 from utils.file_utils import FileUtils
 
@@ -124,7 +125,8 @@ async def handle_message(websocket):
                         await handle_poke_neko(group_id, user_id,target_id, websocket)
 
         except Exception as e:
-            print(f"处理消息时出错: {e}")
+            error_msg = truncate_error_message(e)
+            print(f"处理消息时出错: {error_msg}")
             traceback.print_exc()
             # 如果是消息类型，发送错误响应
             if "post_type" in data and data["post_type"] == "message":
