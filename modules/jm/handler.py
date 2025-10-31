@@ -48,8 +48,6 @@ async def handle_jm(message_text, user_id, group_id, websocket):
     await send_message(websocket, f"📥 已接收到阁下的请求，开始收集材料 {album_id}，请稍候…", user_id, group_id)
 
 
-    safe_cleanup(user_id, album_id)
-
     option = get_option()
     album = await download_album_by_id(album_id, option)
 
@@ -89,7 +87,6 @@ async def handle_jm(message_text, user_id, group_id, websocket):
         await send_message(websocket,f"[CQ:image,file=file:///{zip_path}]", user_id, group_id)
 
     await asyncio.sleep(1)
-    safe_cleanup(user_id, album_id)
     active_tasks[user_id] = False
 
 async def handle_jmzip(message_text, user_id, group_id, websocket):
@@ -123,5 +120,4 @@ async def handle_jmzip(message_text, user_id, group_id, websocket):
 
     await send_message(websocket,f"[CQ:image,file=file:///{zip_path}]", user_id, group_id)
     await asyncio.sleep(1)
-    safe_cleanup(user_id, album_id)
     active_tasks[user_id] = False
