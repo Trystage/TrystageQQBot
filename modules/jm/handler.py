@@ -132,6 +132,6 @@ async def handle_jmzip(message_text, user_id, group_id, websocket):
         safe_cleanup(user_id, album_id)
 
     except Exception as e:
-        await send_message(websocket, "❌ 发生错误：{e}", user_id, group_id)
+        await send_message(websocket, f"❌ 发生错误：{e}", user_id, group_id)
     finally:
         active_tasks[user_id] = False
