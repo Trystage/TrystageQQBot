@@ -70,4 +70,4 @@ class _GroupIds:
 
 GROUP_IDS = _GroupIds()
 JM_CONFIG_FILE = Path(RESOURCE_DIR) / "jm_config.yml"
-JM_DOWNLOAD_DIR = Path(DATA_DIR) / "jm_download"
+JM_DOWNLOAD_DIR = Path(CACHE_DIR) / "jm_download"
