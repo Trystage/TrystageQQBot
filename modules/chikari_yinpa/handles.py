@@ -218,7 +218,7 @@ class yinpa_Handles():
                 str = ""
                 for i in list(dicts.shop_dict.keys()):
                     str += f"{i}：{dicts.shop_dict[i]} 售价：{dicts.shop_price_dict[i]}\n"
-                await send_message(websocket,"错误：该商品不存在\n可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述", user_id, group_id)
+                await send_message(websocket,get_image(Utils.text_to_image("错误：该商品不存在\n可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述")), user_id, group_id)
                 return
         elif help_key[0] == "work":
             if len(help_key) >= 2 and dicts.work_dict.get(help_key[1]):
