@@ -145,36 +145,36 @@ def create_default_jm_config():
     """创建默认配置文件，直接使用项目变量"""
     default_config = f"""client:
 cache: null
-domain:
-html:
-  - 18comic.org
-api:
-  - www.cdnmhwscc.vip
-  - www.cdnblackmyth.club
-  - www.cdnmhws.cc
-  - www.cdnuc.vip
-impl: api
-postman:
-meta_data:
-  headers: null
-  impersonate: chrome110
-  proxies: {{}}
-type: cffi
-retry_times: 2
+  domain:
+    html:`
+      - 18comic.org
+    api:
+      - www.cdnmhwscc.vip
+      - www.cdnblackmyth.club
+      - www.cdnmhws.cc
+      - www.cdnuc.vip
+    impl: api
+    postman:
+      meta_data:
+        headers: null
+        impersonate: chrome110
+        proxies: {{}}
+      type: cffi
+    retry_times: 2`
 dir_rule:
-base_dir: {str(JM_DOWNLOAD_DIR)}
-rule: Bd_Pname
+  base_dir: {str(JM_DOWNLOAD_DIR)}
+  rule: Bd_Pname
 download:
-cache: true
-image:
-decode: true
-suffix: null
-threading:
-image: 30
-photo: 16
+  cache: true
+  image:
+    decode: true
+    suffix: null
+  threading:
+    image: 30
+    photo: 16
 log: true
 plugins:
-valid: log
+  valid: log
 version: '2.1'"""
     with open(JM_CONFIG_FILE, 'w', encoding='utf-8') as f:
         f.write(default_config)
