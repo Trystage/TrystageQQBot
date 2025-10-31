@@ -646,6 +646,9 @@ class Utils:
                     d = Utils.dice(100,139)
                     str += f"1d100 = {d}\n金钱：{data[uid]['money']} → {data[uid]['money'] + d * 1000 * si}"
                     DHandles.data_set(uid,'money',data[uid]['money'] + d * 1000 * si)
+        elif id == 15:
+                    DHandles.state_refresh(uid,1,time() + 10 * 60)
+                    str += f" >= {data[uid]['volition']}\n{data[uid]['name']}失神了！失神状态将持续{10}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
         return str
     
     # async def get_group_yinpa_list(bid: str,gid: int):
