@@ -393,6 +393,8 @@ class Utils:
             atk.append([-80 * sqrt(i[2]),f"{data[target]['name']}：圣体",False])
         if i := Utils.get_skill(uid,10):
             atk.append([-50 * i[2],f"{data[uid]['name']}：呓语",False])
+        if i := Utils.get_skill(target,16):
+            atk.append([-50 * sqrt(i[2]),f"{data[target]['name']}：庇佑",False])
         return atk
 
     @staticmethod
@@ -658,6 +660,8 @@ class Utils:
                 str += DHandles.state_refresh(uid,4,time() + 60 * 60)
             else:
                 str += DHandles.state_refresh(uid,4,Utils.get_state(uid, 4)[1] + 60 * 60)
+        elif id == 17:
+            str += DHandles.skill_refresh(uid,16,level = 1,mode = 'add')
         return str
     
     # async def get_group_yinpa_list(bid: str,gid: int):
