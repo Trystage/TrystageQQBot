@@ -430,9 +430,9 @@ class Utils:
                 str += f"\n{data[uid]['name']}高潮了！\n体质检定：1d100 = {d}"
                 if d >= data[uid]['constitution']:
                     DHandles.data_set(uid,'hp_c',0)
-                    d = Utils.dice(10,(int)(uid) ^ 14)
+                    d = Utils.dice(5,(int)(uid) ^ 14)
                     DHandles.state_refresh(uid,2,time() + d * 3600)
-                    str += f" >= {data[uid]['constitution']}\n{data[uid]['name']}昏迷了！昏迷状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
+                    str += f" >= {data[uid]['constitution']}\n{data[uid]['name']}昏迷了！昏迷状态将持续1d5 = {d}小时。（期间无法行动，无法被透，技能失效。）"
                     if Utils.boat(uid):
                         DHandles.skill_refresh(uid,6,time() + 259200)
                         str += f"\n{data[uid]['name']}的舰装破损了！将进入三天的冷却。"
@@ -531,6 +531,7 @@ class Utils:
             else:
                 DHandles.data_set(uid,"hp_v",data[uid]["hp_v"] + 100)
                 str += "意志HP增加了100\n"
+            DHandles.state_refresh(uid,2,time())
         elif id == 4:
             str += DHandles.skill_refresh(uid,2,level = 1,mode = 'add')
         elif id == 5:
@@ -647,8 +648,11 @@ class Utils:
                     str += f"1d100 = {d}\n金钱：{data[uid]['money']} → {data[uid]['money'] + d * 1000 * si}"
                     DHandles.data_set(uid,'money',data[uid]['money'] + d * 1000 * si)
         elif id == 15:
+                    DHandles.data_set(uid,'hp_v',0)
                     DHandles.state_refresh(uid,1,time() + 10 * 60)
-                    str += f" >= {data[uid]['volition']}\n{data[uid]['name']}失神了！失神状态将持续{10}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
+                    str += f"{data[uid]['name']}失神了！失神状态将持续{10}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
+        elif id == 16:
+                    str += DHandles.state_refresh(uid,4,time() + 60 * 60)
         return str
     
     # async def get_group_yinpa_list(bid: str,gid: int):

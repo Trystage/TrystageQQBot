@@ -584,8 +584,12 @@ class yinpa_Handles():
         Utils.refresh_data(uid)
         d = Utils.dice(100,uid)
         hp = Utils.get_value(uid,"hp")
-        pl_str = f"长度： {data[uid]['penis_length']} → {round(data[uid]['penis_length'] + d / 100 - 0.5,2)}"
-        DHandles.data_set(uid,'penis_length',round(data[uid]['penis_length'] + d / 100 - 0.5,2))
+        if Utils.get_state(uid, 4):
+            pl_str = f"长度： {data[uid]['penis_length']} → {round(data[uid]['penis_length'] + d / 100 - 0.5, 2)} + {round(d / 100, 2)}"
+            DHandles.data_set(uid, 'penis_length', round(data[uid]['penis_length'] + d / 100 - 0.5 + d / 100, 2))
+        else:
+            pl_str = f"长度： {data[uid]['penis_length']} → {round(data[uid]['penis_length'] + d / 100 - 0.5,2)}"
+            DHandles.data_set(uid,'penis_length',round(data[uid]['penis_length'] + d / 100 - 0.5,2))
         hp_str = f"HP： {hp[0]} → {hp[0] - d}"
         rh_str = Utils.reduce_hp(uid,d)
         await send_message(websocket,f"{data[uid]['name']}冲了一发\n" + pl_str + "\n" + hp_str + rh_str, user_id, group_id)
@@ -612,8 +616,12 @@ class yinpa_Handles():
         Utils.refresh_data(uid)
         d = Utils.dice(40,uid)
         hp = Utils.get_value(uid,"hp")
-        vd_str = f"深度： {data[uid]['vagina_depth']} → {round(data[uid]['vagina_depth'] + d / 100,2)}"
-        DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d / 100,2))
+        if Utils.get_state(uid, 4):
+            vd_str = f"深度： {data[uid]['vagina_depth']} → {round(data[uid]['vagina_depth'] + d / 100,2)} + {round(d / 100, 2)}"
+            DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d / 100 + d / 100,2))
+        else:
+            vd_str = f"深度： {data[uid]['vagina_depth']} → {round(data[uid]['vagina_depth'] + d / 100,2)}"
+            DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d / 100,2))
         hp_str = f"HP： {hp[0]} → {hp[0] - d}"
         rh_str = Utils.reduce_hp(uid,d)
         await send_message(websocket,f"{data[uid]['name']}扣了一次\n" + vd_str + "\n" + hp_str + rh_str, user_id, group_id)
