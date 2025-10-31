@@ -647,7 +647,7 @@ class yinpa_Handles():
             str = ""
             for i in list(dicts.shop_dict.keys()):
                 str += f"{i}：{dicts.shop_dict[i]} 售价：{dicts.shop_price_dict[i]}\n"
-            await send_message(websocket,"可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述", user_id, group_id)
+            await send_message(websocket,get_image(Utils.text_to_image("可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述")), user_id, group_id)
             return
         else:
             goods = shop_key
@@ -657,7 +657,7 @@ class yinpa_Handles():
                     str = ""
                     for j in list(dicts.shop_dict.keys()):
                         str += f"{j}：{dicts.shop_dict[j]} 售价：{dicts.shop_price_dict[j]}\n"
-                    await send_message(websocket,"错误：该商品不存在\n可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述", user_id, group_id)
+                    await send_message(websocket,get_image(Utils.text_to_image("错误：该商品不存在\n可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述")), user_id, group_id)
                     return
                 if i in list(dicts.shop_dict.values()):
                     i = (list(dicts.shop_dict.keys()))[(list(dicts.shop_dict.values())).index(i)]
