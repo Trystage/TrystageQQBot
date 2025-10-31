@@ -6,3 +6,4 @@ data/groups.json
 /data
 /cache
 /logs
+resource/jm_config.yml
