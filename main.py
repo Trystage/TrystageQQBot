@@ -126,7 +126,7 @@ async def handle_message(websocket):
                         await handle_poke_neko(group_id, user_id,target_id, websocket)
 
         except Exception as e:
-            error_msg = truncate_error_message(e)
+            error_msg = truncate_error_message(str(e))
             print(f"处理消息时出错: {error_msg}")
             traceback.print_exc()
             # 如果是消息类型，发送错误响应
