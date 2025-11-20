@@ -162,7 +162,10 @@ class DHandles():
         Returns:
             str: 描述文本
         """
-        
+        str = ''
+        if level > 1145141919810:
+            level = 1145141919810
+            str += "等级过高,更改为1145141919810"
         global data
         b = False
         for i in range(len(data[uid]["skill"]) - 1, -1, -1):
@@ -180,7 +183,8 @@ class DHandles():
                 del data[uid]["skill"][i]
         if not b:
             data[uid]["skill"].append([id,value,level])
-        return f"获得技能：{dicts.skill_dict[id]}（等级：{level}）（ID：{id}）\n"
+        str += f"获得技能：{dicts.skill_dict[id]}（等级：{level}）（ID：{id}）\n"
+        return str
     
     def state_refresh(uid: str,id: int,value = time(),level: int = 1,mode: str = ''):
         """更新状态
@@ -195,7 +199,11 @@ class DHandles():
         Returns:
             str: 描述文本
         """
-        
+        str = ''
+        if level > 1145141919810:
+            level = 1145141919810
+            str += "等级过高,更改为1145141919810"
+
         global data
         b = False
         for i in range(len(data[uid]["state"])):
@@ -213,4 +221,5 @@ class DHandles():
                 break
         if not b:
             data[uid]["state"].append([id,value,level])
-        return f"获得状态：{dicts.state_dict[id]}（等级：{level}）（ID：{id}）（持续时间：{(int)(value - time())}秒）\n"
+        str += f"获得状态：{dicts.state_dict[id]}（等级：{level}）（ID：{id}）（持续时间：{(int)(value - time())}秒）\n"
+        return str
