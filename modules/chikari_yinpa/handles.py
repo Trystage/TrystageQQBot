@@ -855,7 +855,7 @@ class yinpa_Handles():
             await send_message(websocket, "错误：用法: pay <@某人 或 银趴昵称> <数量>", user_id, group_id)
             return
 
-        amount = int(arg_list[3])
+        amount = int(arg_list[2])
 
         if amount < 0:
             await send_message(websocket, "错误：不可以白嫖!", user_id, group_id)
