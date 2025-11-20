@@ -818,6 +818,56 @@ class yinpa_Handles():
         str += "一小时内你将无法继续工作"
         await send_message(websocket,get_image(Utils.text_to_image(str)), user_id, group_id)
     @staticmethod
+    async def yinpa_pay(websocket, args):
+        """处理打钱
+        """
+        user_id = args.get("user_id")
+        group_id = args.get("group_id")
+        message = args.get("message", "")
+
+        if not Utils.group_enable_check(group_id):
+            await send_message(websocket, "本群银趴已禁用", user_id, group_id)
+            return
+        at: list = Utils.get_at(message)
+        arg_list = message.split()
+        if not at:
+            if arg_list:
+                f_uid = None
+                for i in arg_list:
+                    f_uid = Utils.find_user_name(i)
+                    if f_uid:
+                        at = f_uid
+                        break
+                if not f_uid:
+                    await send_message(websocket, "错误：未找到目标！", user_id, group_id)
+                    return
+            else:
+                await send_message(websocket, "错误：未指定目标！", user_id, group_id)
+                return
+        elif at == ['all']:
+            await send_message(websocket, "错误：未指定目标！", user_id, group_id)
+            return
+        else:
+            at = at[0]
+        uid: str = user_id
+
+        if not len(arg_list) == 3:
+            await send_message(websocket, "错误：用法: pay <@某人 或 银趴昵称> <数量>", user_id, group_id)
+            return
+
+        amount = int(arg_list[3])
+
+        if amount < 0:
+            await send_message(websocket, "错误：不可以白嫖!", user_id, group_id)
+        elif amount == 0:
+            await send_message(websocket, "错误：只有0元是什么嘛?!", user_id, group_id)
+
+        str = Utils.pay(uid, at, amount)
+        await send_message(websocket, str, user_id, group_id)
+        return
+
+
+    @staticmethod
     @require_group_admin_ws
     async def test(websocket, args):
         """测试用

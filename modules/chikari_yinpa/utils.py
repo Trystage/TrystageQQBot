@@ -729,3 +729,30 @@ class Utils:
 
         # 返回所有匹配到的QQ号
         return matches
+
+
+    @staticmethod
+    def pay(uid: str, target: str, amount: int):
+        """
+
+
+        Args:
+            uid (str): 支付用户uid
+            target (str): 被支付用户uid
+            amount (int): 支付金额
+
+        Returns:
+            str: 描述文本
+        """
+        str = ''
+        if data[uid]['money'] < amount * 0.1 :
+            str = f"支付失败, 金钱:{data[uid]['money']} < 支付金额:{amount} + tax:(amount * 0.1)"
+            return str
+
+        str += f"{data[uid]['name']} 金钱：{data[uid]['money']} → {data[uid]['money'] - amount - (amount * 0.1)}"
+        DHandles.data_set(uid, 'money', data[uid]['money'] - amount - (amount * 0.1))
+
+        str += f"{data[target]['name']} 金钱：{data[target]['money']} → {data[target]['money'] + amount}"
+        DHandles.data_set(target, 'money', data[target]['money'] + amount)
+        return str
+

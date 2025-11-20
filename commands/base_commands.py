@@ -41,7 +41,7 @@ def is_yinpa_command(message_text):
                       "yinpa_help", "银趴帮助", "yinpa_join", "加入银趴", "yinpa_leave", "离开银趴",
                       "tou", "透", "插入", "zha", "榨", "榨精", "chong", "冲", "打胶", "手冲", "撸", "导",
                       "kou", "扣", "扣扣", "自慰", "紫薇", "shop", "商店", "买", "买东西", "店",
-                      "work", "工作", "打工", "yinpa_test"]
+                      "work", "工作", "打工", "pay", "打钱", "v ", "yinpa_test"]
     return any(message_text.startswith(cmd) for cmd in yinpa_commands)
 
 def is_jm_command(message_text):

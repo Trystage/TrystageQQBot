@@ -17,6 +17,7 @@ class dicts():
         "kou":"kou\n命令：kou\n命令别称：扣 扣扣 自慰 紫薇\n扣一次，能够增加少量深度",
         "shop":"shop\n命令：shop\n命令别称：商店 买 买东西 店\n花费金钱购买商品\n参见：yinpa_help shop",
         "work":"work\n命令：work\n命令别称：工作 打工\n工作，获得金钱及其他东西\n参见：yinpa_help work",
+        "pay":"pay\n命令：pay\n命令别称：v 打钱\n今天疯狂星期四,v本喵50~",
     }
     """帮助表
     """
@@ -53,6 +54,7 @@ class dicts():
         "店":"shop",
         "工作":"work",
         "打工":"work",
+        "打钱":"pay",
     }
     """帮助别称
     """
