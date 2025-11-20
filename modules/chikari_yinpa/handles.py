@@ -863,7 +863,7 @@ class yinpa_Handles():
             await send_message(websocket, "错误：只有0元是什么嘛?!", user_id, group_id)
 
         str = Utils.pay(uid, at, amount)
-        await send_message(websocket, str, user_id, group_id)
+        await send_message(websocket, Utils.text_to_image(str), user_id, group_id)
         return
 
 

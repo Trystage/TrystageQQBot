@@ -746,13 +746,14 @@ class Utils:
         """
         str = ''
         if data[uid]['money'] < amount * 0.1 :
-            str = f"支付失败, 金钱:{data[uid]['money']} < 支付金额:{amount} + tax:(amount * 0.1)"
+            str = f"支付失败, 你的金钱:{data[uid]['money']} < 支付金额:{amount} + tax:(amount * 0.1)"
             return str
+        str += f"失败是成功之母, 你是成功支付!~"
 
-        str += f"{data[uid]['name']} 金钱：{data[uid]['money']} → {data[uid]['money'] - amount - (amount * 0.1)}"
+        str += f"\n{data[uid]['name']} 金钱：{data[uid]['money']} - {amount} - {amount * 0.1} → {data[uid]['money'] - amount - (amount * 0.1)}"
         DHandles.data_set(uid, 'money', data[uid]['money'] - amount - (amount * 0.1))
 
-        str += f"{data[target]['name']} 金钱：{data[target]['money']} → {data[target]['money'] + amount}"
+        str += f"\n{data[target]['name']} 金钱：{data[target]['money']} + {amount} → {data[target]['money'] + amount}"
         DHandles.data_set(target, 'money', data[target]['money'] + amount)
         return str
 
