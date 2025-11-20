@@ -274,8 +274,9 @@ class Utils:
         
         b = 0
         s = Utils.get_skill(uid,6)
-        if s and s[1] and s[1] <= time():
+        if (s and s[1] and s[1] <= time()) or (s and s[1] is None):
             b = s[2]
+
         return b
 
     @staticmethod
