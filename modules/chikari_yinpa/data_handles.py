@@ -163,9 +163,6 @@ class DHandles():
             str: 描述文本
         """
         str = ''
-        if level > 1145141919810:
-            level = 1145141919810
-            str += "等级过高,更改为1145141919810"
         global data
         b = False
         for i in range(len(data[uid]["skill"]) - 1, -1, -1):
@@ -174,6 +171,9 @@ class DHandles():
                 if len(data[uid]["skill"][i]) >= 3:
                     if mode == 'add':
                         level += data[uid]["skill"][i][2]
+                    if level > 1145141919810:
+                        level = 1145141919810
+                        str += "等级过高,更改为1145141919810"
                     data[uid]["skill"][i][2] = level
                 else:
                     data[uid]["skill"][i].insert(2,level)
@@ -200,10 +200,7 @@ class DHandles():
             str: 描述文本
         """
         str = ''
-        if level > 1145141919810:
-            level = 1145141919810
-            str += "等级过高,更改为1145141919810"
-
+            
         global data
         b = False
         for i in range(len(data[uid]["state"])):
@@ -212,6 +209,9 @@ class DHandles():
                 if len(data[uid]["state"][i]) >= 3:
                     if mode == 'add':
                         level += data[uid]["state"][i][2]
+                    if level > 1145141919810:
+                        level = 1145141919810
+                        str += "等级过高,更改为1145141919810"
                     data[uid]["state"][i][2] = level
                 else:
                     data[uid]["state"][i].insert(2,level)
