@@ -39,7 +39,8 @@ async def handle_help_command(message_text, user_id, group_id, message_type):
 
 使用示例：
 /try report @rootlaw03 刷屏
-/try ref 管理组变女仆!"""
+/try ref 管理组变女仆!
+投喂好次的请使用/try ref反馈给我取件码~~"""
     
     # 构造响应消息
     response_message = {
