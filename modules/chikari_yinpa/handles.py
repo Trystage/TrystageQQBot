@@ -813,6 +813,20 @@ class yinpa_Handles():
                     i = Utils.dice(len(l),(int)(uid) ^ 106)
                     d = Utils.dice(86400,(int)(uid) ^ 107)
                     str += DHandles.skill_refresh(uid,l[i - 1],level = 1,mode = 'add')
+        if work_key == 7:
+            money += (Utils.get_value(uid,'strength')[0] + Utils.get_value(uid,'constitution')[0]) * Utils.dice(200,(Utils.get_value(uid,'strength')[0] + Utils.get_value(uid,'constitution')[0])) / 50
+            if money < 0:
+                money = 0
+            str += f"你进行了工作：{dicts.work_dict[work_key]}\n收益：{money}\n"
+            d = Utils.dice(100,Utils.get_value(uid,'constitution')[0])
+            str += f"体质检定：1d100 = {d} "
+            if d >= Utils.get_value(uid,'constitution')[0]:
+                DHandles.data_set(uid,"hp_v",0)
+                d = Utils.dice(10,(int)(uid) ^ 101)
+                DHandles.state_refresh(uid,1,time.time() + d * 3600)
+                str += f" >= {data[uid]['constitution']}\n{data[uid]['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
+            else:
+                str += f" < {data[uid]['constitution']}\n"
         DHandles.data_set(uid,"next_work_time",(time.time() + 3600))
         DHandles.data_set(uid,"money",data[uid]["money"] + money)
         str += "一小时内你将无法继续工作"
