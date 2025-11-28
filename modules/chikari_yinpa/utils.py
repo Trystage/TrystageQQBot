@@ -706,33 +706,6 @@ class Utils:
     #     return img_byte.getvalue()
 
     @staticmethod
-    def get_at(message: str):
-        """
-        从消息中提取所有@的QQ号
-
-        Args:
-            message (str): 消息内容，可能包含CQ码格式的@
-
-        Returns:
-            list: 包含所有被@的QQ号的列表，如果是@全体则返回['all']
-        """
-        # 如果消息为空，返回空列表
-        if not message:
-            return []
-
-        # 检查是否@全体成员
-        if '[CQ:at,qq=all]' in message:
-            return ['all']
-
-        # 使用正则表达式匹配所有CQ码格式的@
-        at_pattern = r'\[CQ:at,qq=(\d+)\]'
-        matches = re.findall(at_pattern, message)
-
-        # 返回所有匹配到的QQ号
-        return matches
-
-
-    @staticmethod
     def pay(uid: str, target: str, amount: int):
         """
 

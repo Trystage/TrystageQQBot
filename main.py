@@ -17,7 +17,6 @@ from commands.base_commands import (
 from handlers.announcement_handler import handle_announce_command
 from handlers.chat_handler import handle_chat
 from handlers.feedback_handler import handle_feedback_command
-from handlers.jm_handler import handle_jm_command
 from handlers.pokeneko_handler import handle_poke_neko
 from handlers.punishment_handler import handle_mute_command
 from handlers.report_handler import handle_report_command

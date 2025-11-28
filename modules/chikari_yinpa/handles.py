@@ -1,4 +1,4 @@
-from utils.websocket_utils import send_message, get_user_nickname, get_image, require_group_admin_ws
+from utils.websocket_utils import send_message, get_user_nickname, get_image, require_group_admin_ws, get_at
 import time
 from hashlib import md5
 from math import sqrt
@@ -248,7 +248,7 @@ class yinpa_Handles():
         if not Utils.group_enable_check(group_id):
             await send_message(websocket,"本群银趴已禁用", user_id, group_id)
             return
-        at:list = Utils.get_at(message)
+        at:list = get_at(message)
         if not at:
             arg_list = message.split()
             if arg_list:
@@ -287,7 +287,7 @@ class yinpa_Handles():
         if not Utils.group_enable_check(group_id):
             await send_message(websocket,"本群银趴已禁用", user_id, group_id)
             return
-        at:list = Utils.get_at(message)
+        at:list = get_at(message)
         if not at:
             arg_list = message.split()
             if arg_list:
@@ -430,7 +430,7 @@ class yinpa_Handles():
         if not Utils.group_enable_check(group_id):
             await send_message(websocket,"本群银趴已禁用", user_id, group_id)
             return
-        at:list = Utils.get_at(message)
+        at:list = get_at(message)
         if not at:
             arg_list = message.split()
             if arg_list:
@@ -842,7 +842,7 @@ class yinpa_Handles():
         if not Utils.group_enable_check(group_id):
             await send_message(websocket, "本群银趴已禁用", user_id, group_id)
             return
-        at: list = Utils.get_at(message)
+        at: list = get_at(message)
         arg_list = message.split()
         if not at:
             if arg_list:
