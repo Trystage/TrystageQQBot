@@ -873,8 +873,10 @@ class yinpa_Handles():
 
         if amount < 0:
             await send_message(websocket, "错误：不可以白嫖!", user_id, group_id)
+            return
         elif amount == 0:
             await send_message(websocket, "错误：只有0元是什么嘛?!", user_id, group_id)
+            return
 
         str = Utils.pay(uid, at, amount)
         await send_message(websocket, get_image(Utils.text_to_image(str)), user_id, group_id)
