@@ -13,7 +13,8 @@ async def handle_chat(message_text: str, user_id: str, group_id: str, message_ty
     :return:
     """
     if ("(哈" in message_text) or ("（哈" in message_text) or ("*哈" in message_text) or (message_text == "哈气") \
-            or (message_text == "哈!") or (message_text == "哈！") or (message_text == "哈") or (message_text == "哈气!") or (message_text == "哈气！") or (message_text == "嘶!"):
+            or (message_text == "哈!") or (message_text == "哈！") or (message_text == "哈") or (message_text == "哈气!") or (message_text == "哈气！") or (message_text == "嘶!") \
+            or (message_text == "哈~") or (message_text == "哈~") or (message_text == "哈！~") or (message_text == "哈!~"):
         messages = ["哈!(哈气", "哈!", "(哈气", "哈!(喵喵哈气", "哈!(炸毛"]
         message = messages[dice(4,  114514^114514)]
         await send_message(websocket, message, user_id, group_id)
