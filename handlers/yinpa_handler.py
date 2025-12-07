@@ -46,7 +46,7 @@ async def handle_yinpa_command(message_text: str, user_id: str, group_id: str, m
         await yinpa_handler.yinpa_work(websocket, args)
     elif message_text.startswith("pay") or message_text.startswith("打钱") or message_text.startswith("v "):
         await yinpa_handler.yinpa_pay(websocket, args)
-    elif message_text.startswith("yinpa_set "):
+    elif message_text.startswith("yinpa_set"):
         await yinpa_handler.yinpa_set(websocket, args)
     else:
         # 默认响应，显示帮助信息
