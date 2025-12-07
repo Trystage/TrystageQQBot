@@ -534,7 +534,7 @@ class Utils:
             else:
                 DHandles.data_set(uid,"hp_v",data[uid]["hp_v"] + 100)
                 str += "意志HP增加了100\n"
-            if Utils.get_state(uid,3):
+            if Utils.get_state(uid,2):
                 DHandles.state_refresh(uid, 2, time())
                 str += "已清理昏迷效果\n"
         elif id == 4:
