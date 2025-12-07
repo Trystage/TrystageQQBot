@@ -201,7 +201,7 @@ async def check_user_role(websocket, group_id: int, user_id: int) -> bool:
     return role in ["admin", "owner"]
 
 def require_group_admin_ws(func):
-    """装饰器：要求用户必须是群管理员或群主"""
+    """要求用户必须是群管理员或群主(websocket, data)"""
 
     @wraps(func)
     async def wrapper(websocket, data):
