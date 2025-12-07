@@ -914,6 +914,7 @@ class yinpa_Handles():
 
         if len(message.split()) < 5:
             await send_message(websocket,"错误：yinpa_set <target> <type> <dict> <amount>", user_id, group_id)
+            return
 
         at:list = get_at(message)
         if not at:
@@ -952,6 +953,7 @@ class yinpa_Handles():
             DHandles.state_refresh(at,dict,time.time() + times, amount)
         else:
             await send_message(websocket,"错误：type can only be 'attr','skill','state'", user_id, group_id)
-
+            return
+        await send_message(websocket, "处理完成", user_id, group_id)
 
 
