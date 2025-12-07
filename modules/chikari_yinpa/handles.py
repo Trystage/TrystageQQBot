@@ -1,3 +1,7 @@
+from ctypes import pythonapi
+
+from attr import attributes
+
 from utils.websocket_utils import send_message, get_user_nickname, get_image, require_group_admin_ws, get_at
 import time
 from hashlib import md5
@@ -233,6 +237,9 @@ class yinpa_Handles():
                 return
         elif dicts.yinpa_help_dict.get(help_key[0]):
             await send_message(websocket,get_image(Utils.text_to_image(dicts.yinpa_help_dict[help_key[0]])), user_id, group_id)
+        elif help_key[0] == "attr":
+            str = "\n".join([f"{k}: {v}" for k, v in dicts.attribute_dict.items()])
+            await send_message(websocket,get_image(Utils.text_to_image(str)),user_id, group_id)
         else:
             await send_message(websocket,get_image(Utils.text_to_image("错误：不存在对应的帮助\n可用帮助：\n" + "\n".join(list(dicts.yinpa_help_dict.keys())))), user_id, group_id)
             return
@@ -895,3 +902,56 @@ class yinpa_Handles():
         uid = user_id
         DHandles.data_test_file_save()
         await send_message(websocket, "已发送至cache", user_id, group_id)
+
+    @staticmethod
+    @require_group_admin_ws
+    async def yinpa_set(websocket, args):
+        """测试用
+        """
+        user_id = args.get("user_id")
+        group_id = args.get("group_id")
+        message = args.get("message", "")
+
+        if len(message.split()) < 5:
+            await send_message(websocket,"错误：yinpa_set <target> <type> <dict> <amount>", user_id, group_id)
+
+        at:list = get_at(message)
+        if not at:
+            arg_list = message.split()
+            if arg_list:
+                f_uid = None
+                for i in arg_list:
+                    f_uid = Utils.find_user_name(i)
+                    if f_uid:
+                        at = f_uid
+                        break
+                if not f_uid:
+                    await send_message(websocket,"错误：未找到目标！", user_id, group_id)
+                    return
+            else:
+                await send_message(websocket,"错误：未指定目标！", user_id, group_id)
+                return
+        elif at == ['all']:
+            await send_message(websocket,"错误：未指定目标！", user_id, group_id)
+            return
+        else:
+            at = at[0]
+        type = message.split()[2]
+        dict = message.split()[3]
+        amount = int(message.split()[4])
+
+        if type == "attr":
+            DHandles.data_set(at,dict,amount)
+        elif type == "skill":
+            DHandles.skill_refresh(at,dict,None,amount)
+        elif type == "state":
+            if len(message.split()) < 6:
+                await send_message(websocket, "错误：state需要时长", user_id, group_id)
+                return
+            times = int(message.split()[5])
+            DHandles.state_refresh(at,dict,time.time() + times, amount)
+        else:
+            await send_message(websocket,"错误：type can only be 'attr','skill','state'", user_id, group_id)
+
+
+
