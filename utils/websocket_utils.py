@@ -3,7 +3,7 @@ import re
 
 from functools import wraps
 
-from config import SUPER_USER
+from config import SUPER_USER, ADMIN_GROUP_ID, TEST_GROUP_ID
 
 
 async def send_response(websocket, user_id, group_id, message_type, message):
@@ -216,6 +216,32 @@ def require_group_admin_ws(func):
                 "params": {
                     "group_id": group_id,
                     "message": "权限不足：只有群管理员或群主才能使用此命令"
+                }
+            }
+            await websocket.send(json.dumps(response_msg))
+            return
+
+        # 有权限，执行原函数
+        return await func(websocket, data)
+
+    return wrapper
+
+def require_master_ws(func):
+    """要求用户必须是机器猫猫主人(websocket, data)"""
+
+    @wraps(func)
+    async def wrapper(websocket, data):
+        user_id = int(data.get('user_id'))
+        group_id = int(data.get('group_id'))
+
+        has_permission = (group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID or user_id in SUPER_USER)
+        if not has_permission:
+            # 权限不足的处理
+            response_msg = {
+                "action": "send_group_msg",
+                "params": {
+                    "group_id": group_id,
+                    "message": "权限不足：只有机器猫猫主人才能使用此命令"
                 }
             }
             await websocket.send(json.dumps(response_msg))
