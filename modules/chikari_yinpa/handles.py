@@ -2,7 +2,8 @@ from ctypes import pythonapi
 
 from attr import attributes
 
-from utils.websocket_utils import send_message, get_user_nickname, get_image, require_group_admin_ws, get_at
+from utils.websocket_utils import send_message, get_user_nickname, get_image, require_group_admin_ws, get_at, \
+    require_master_ws
 import time
 from hashlib import md5
 from math import sqrt
@@ -904,7 +905,7 @@ class yinpa_Handles():
         await send_message(websocket, "已发送至cache", user_id, group_id)
 
     @staticmethod
-    @require_group_admin_ws
+    @require_master_ws
     async def yinpa_set(websocket, args):
         """测试用
         """
