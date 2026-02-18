@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from utils.websocket_utils import send_message
 from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR
-
+import time
 _last_feedback_time = {}
 
 def log_feedback_record(user_id, group_id, message):
@@ -32,7 +32,7 @@ async def handle_feedback_command(message_text, user_id, group_id, websocket):
         return False
     # 记录本次反馈时间
     _last_feedback_time[user_id] = current_time
-    
+
     parts = message_text.split()
     if len(parts) >= 3:
         message = " ".join(parts[2:])  # 反馈内容（合并剩余部分）
