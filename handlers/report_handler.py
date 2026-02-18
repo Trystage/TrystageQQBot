@@ -3,8 +3,9 @@ import os
 from datetime import datetime
 from utils.websocket_utils import send_message, extract_qq
 from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR
+import time
 
-
+_last_report_time = {}
 
 def log_report_record(user_id, reason, operator):
     """记录举报信息到单独的文件"""
@@ -21,6 +22,19 @@ def log_report_record(user_id, reason, operator):
 
 async def handle_report_command(message_text, user_id, group_id, websocket):
     """处理举报命令"""
+    # 新增：冷却时间检查
+    current_time = time.time()
+    last_time = _last_report_time.get(user_id)
+    if last_time and (current_time - last_time) < 1200:  # 20分钟 = 1200秒
+        remaining = int(1200 - (current_time - last_time))
+        minutes = remaining // 60
+        seconds = remaining % 60
+        cooldown_msg = f"反馈冷却中，请等待 {minutes}分{seconds}秒后再试。"
+        await send_message(websocket, cooldown_msg, group_id=group_id)
+        return False
+    # 记录本次反馈时间
+    _last_report_time[user_id] = current_time
+
     parts = message_text.split()
     if len(parts) >= 3:
         target_qq = extract_qq(parts[2])
