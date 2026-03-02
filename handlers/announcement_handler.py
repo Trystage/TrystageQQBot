@@ -1,11 +1,11 @@
 from utils.websocket_utils import send_message
-from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID
+from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, SUPER_USER
 
 
 async def handle_announce_command(message_text, user_id, group_id, websocket):
     """处理公告命令"""
     # 检查是否为管理群
-    if group_id != ADMIN_GROUP_ID and group_id != TEST_GROUP_ID:
+    if group_id != ADMIN_GROUP_ID and group_id != TEST_GROUP_ID and user_id not in SUPER_USER:
         error_feedback = "只有管理员可以使用此命令。"
         await send_message(websocket, error_feedback, group_id=group_id)
         return False

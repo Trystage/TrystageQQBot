@@ -1,4 +1,4 @@
-from config import ADMIN_GROUP_ID, TEST_GROUP_ID, GROUP_IDS
+from config import ADMIN_GROUP_ID, TEST_GROUP_ID, GROUP_IDS, SUPER_USER
 from utils.file_utils import FileUtils
 from utils.websocket_utils import send_message
 
@@ -6,7 +6,7 @@ from utils.websocket_utils import send_message
 async def handle_add_group_command(message_text, user_id, group_id, message_type, websocket):
     """处理添加群组ID命令"""
     # 检查用户是否在管理员群或测试群
-    is_admin_or_test_group = group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID
+    is_admin_or_test_group = group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID or user_id in SUPER_USER
 
     if not is_admin_or_test_group:
         await send_message(websocket, "错误：您没有权限执行此命令", user_id, group_id)

@@ -1,10 +1,10 @@
-from config import ADMIN_GROUP_ID, TEST_GROUP_ID
+from config import ADMIN_GROUP_ID, TEST_GROUP_ID, SUPER_USER
 
 
 async def handle_help_command(message_text, user_id, group_id, message_type):
     """处理帮助命令"""
     # 检查用户是否在管理员群或测试群
-    is_admin_or_test_group = group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID
+    is_admin_or_test_group = group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID or user_id in SUPER_USER
     
     # 构造帮助信息
     if is_admin_or_test_group:

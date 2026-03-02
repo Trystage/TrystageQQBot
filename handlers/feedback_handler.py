@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from utils.websocket_utils import send_message
-from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR
+from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR, SUPER_USER
 import time
 _last_feedback_time = {}
 
@@ -23,7 +23,7 @@ async def handle_feedback_command(message_text, user_id, group_id, websocket):
     # 新增：冷却时间检查
     current_time = time.time()
     last_time = _last_feedback_time.get(user_id)
-    if last_time and (current_time - last_time) < 1200:  # 20分钟 = 1200秒
+    if last_time and (current_time - last_time) < 1200 and user_id not in SUPER_USER:  # 20分钟 = 1200秒
         remaining = int(1200 - (current_time - last_time))
         minutes = remaining // 60
         seconds = remaining % 60

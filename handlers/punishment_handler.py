@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from utils.websocket_utils import send_message, send_mute
-from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR
+from config import TARGET_GROUP_ID, ADMIN_GROUP_ID, TEST_GROUP_ID, LOGS_DIR, SUPER_USER
 
 
 def format_duration(seconds):
@@ -32,7 +32,7 @@ def log_ban_record(user_id, duration, reason, operator):
 async def handle_mute_command(message_text, user_id, group_id, websocket):
     """处理禁言命令"""
     # 检查是否为管理群
-    if group_id != ADMIN_GROUP_ID and group_id != TEST_GROUP_ID:
+    if group_id != ADMIN_GROUP_ID and group_id != TEST_GROUP_ID and user_id not in SUPER_USER:
         error_feedback = "只有管理员可以使用此命令。"
         await send_message(websocket, error_feedback, group_id=group_id)
         return False
