@@ -48,7 +48,7 @@ async def handle_message(websocket):
 
                 # 处理公告命令
                 if is_announce_command(message_text, group_id):
-                    await handle_announce_command(message_text, group_id, websocket)
+                    await handle_announce_command(message_text, user_id, group_id, websocket)
                     # 不需要额外的response_message，因为handle_announce_command已经发送了响应
 
                 # 处理反馈命令

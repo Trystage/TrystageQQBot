@@ -3,7 +3,7 @@ from config import ADMIN_GROUP_ID, TEST_GROUP_ID
 
 def is_announce_command(message_text, group_id):
     """检查是否为公告命令"""
-    return (group_id == ADMIN_GROUP_ID or group_id == TEST_GROUP_ID) and message_text.startswith("/try announce")
+    return message_text.startswith("/try announce")
 
 
 def is_feedback_command(message_text):
@@ -13,7 +13,7 @@ def is_feedback_command(message_text):
 
 def is_mute_command(message_text, group_id):
     """检查是否为禁言命令（仅限管理员群或测试群）"""
-    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try mute")
+    return message_text.startswith("/try mute")
 
 
 def is_report_command(message_text):
@@ -28,11 +28,11 @@ def is_help_command(message_text):
 
 def is_add_group_command(message_text, group_id):
     """检查是否为添加群组ID命令（仅限管理员群或测试群）"""
-    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try add")
+    return message_text.startswith("/try add")
 
 def is_remove_group_command(message_text, group_id):
     """检查是否为添加群组ID命令（仅限管理员群或测试群）"""
-    return ((group_id == ADMIN_GROUP_ID) or (group_id == TEST_GROUP_ID)) and message_text.startswith("/try rem")
+    return message_text.startswith("/try rem")
 
 
 def is_yinpa_command(message_text):
