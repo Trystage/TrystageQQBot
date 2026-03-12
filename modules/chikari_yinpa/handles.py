@@ -76,7 +76,7 @@ class yinpa_Handles():
                                f"长度增加：{user_data['penis_length']} + ({d_pl}/100) = {new_pl}\n"
                                f"深度增加：{user_data['vagina_depth']} + ({d_vd}/100) = {new_vd}\n"
                                f"金钱增加：{user_data['money']} + {d_m} = {new_money}\n"
-                               "ps：签到于早上8点刷新",
+                               "ps：签到于早上8点刷新，如果你是牢玩家，可以发送“老手礼包”领取喵喵的补偿qwq~",
                                user_id, group_id)
         else:
             await send_message(websocket, "你今天已经打过卡了呢~\nps：签到于早上8点刷新，别问我为什么", user_id, group_id)
