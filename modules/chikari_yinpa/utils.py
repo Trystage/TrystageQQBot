@@ -1,3 +1,4 @@
+import math
 import os
 import re
 from random import randint,seed,sample,choice
@@ -561,9 +562,12 @@ class Utils:
         elif id == 13:
             l = data[uid]["skill"] + sample([[10,None,0],[11,None,0],[12,None,0],[13,None,0],[14,None,0],[15,None,0],],5)
             sk = choice(l)
-            sk[2] = 0
+            sk[2] = sk[2] if sk[2] > 0 else 1
+            total = 0
             for i in l:
-                sk[2] += i[2]
+                total += i[2]
+            total = int(math.log(total + 1, 10) * 10)
+            sk[2] += total * sqrt(sk[2])
             str += DHandles.skill_refresh(uid,sk[0],level = sk[2])
         elif id == 14:
             d = Utils.dice(10,13)
