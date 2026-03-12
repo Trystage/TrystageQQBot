@@ -182,7 +182,7 @@ class yinpa_Handles():
             await send_message(websocket,get_image(Utils.text_to_image("可用帮助：\n" + "\n".join(list(dicts.yinpa_help_dict.keys())))), user_id, group_id)
             return
         elif help_key[0] == 'species':
-            if len(help_key) >= 2 and dicts.species_help.get(help_key[1]):
+            if len(help_key) >= 2 and help_key[1] in dicts.species_help.values():
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.species_help[help_key[1]])), user_id, group_id)
             elif len(help_key) >= 2 and dicts.species_dict.get(int(help_key[1])):
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.species_help[dicts.species_dict[int(help_key[1])]])), user_id, group_id)
@@ -193,7 +193,7 @@ class yinpa_Handles():
                 await send_message(websocket,"错误：该种族不存在\n可用种族：\n" + str + "\n输入yinpa_help species [种族名或种族ID] 以查看种族描述", user_id, group_id)
                 return
         elif help_key[0] == "skill":
-            if len(help_key) >= 2 and dicts.skill_help.get(help_key[1]):
+            if len(help_key) >= 2 and help_key[1] in dicts.skill_help.values():
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.skill_help[help_key[1]])), user_id, group_id)
             elif len(help_key) >= 2 and dicts.skill_dict.get(int(help_key[1])):
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.skill_help[dicts.skill_dict[int(help_key[1])]])), user_id, group_id)
@@ -204,7 +204,7 @@ class yinpa_Handles():
                 await send_message(websocket,"错误：该技能不存在\n可用技能：\n" + str + "\n输入yinpa_help skill [技能名或技能ID] 以查看技能描述", user_id, group_id)
                 return
         elif help_key[0] == 'state':
-            if len(help_key) >= 2 and dicts.state_help.get(help_key[1]):
+            if len(help_key) >= 2 and help_key[1] in dicts.state_help.values():
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.state_help[help_key[1]])), user_id, group_id)
             elif len(help_key) >= 2 and dicts.state_dict.get(int(help_key[1])):
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.state_help[dicts.state_dict[int(help_key[1])]])), user_id, group_id)
@@ -215,7 +215,7 @@ class yinpa_Handles():
                 await send_message(websocket,"错误：该状态不存在\n可用状态：\n" + str + "\n输入yinpa_help state [状态名或状态ID] 以查看状态描述", user_id, group_id)
                 return
         elif help_key[0] == "shop":
-            if len(help_key) >= 2 and dicts.shop_help.get(help_key[1]):
+            if len(help_key) >= 2 and help_key[1] in dicts.shop_help.values():
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.shop_help[help_key[1]])), user_id, group_id)
             elif len(help_key) >= 2 and dicts.shop_dict.get(int(help_key[1])):
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.shop_help[dicts.shop_dict[int(help_key[1])]])), user_id, group_id)
@@ -226,7 +226,7 @@ class yinpa_Handles():
                 await send_message(websocket,get_image(Utils.text_to_image("错误：该商品不存在\n可用商品：\n" + str + "\n输入yinpa_help shop [商品名或商品ID] 以查看商品描述")), user_id, group_id)
                 return
         elif help_key[0] == "work":
-            if len(help_key) >= 2 and dicts.work_dict.get(help_key[1]):
+            if len(help_key) >= 2 and help_key[1] in dicts.work_dict.values():
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.work_help_dict[help_key[1]])), user_id, group_id)
             elif len(help_key) >= 2 and dicts.work_dict.get(int(help_key[1])):
                 await send_message(websocket,get_image(Utils.text_to_image(dicts.work_help_dict[dicts.work_dict[int(help_key[1])]])), user_id, group_id)
