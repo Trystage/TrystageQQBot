@@ -8,7 +8,7 @@ import time
 from hashlib import md5
 from math import sqrt
 
-from .data_handles import data,configdata,DHandles
+from .data_handles import DHandles
 from .yinpa_config import Config
 from .utils import Utils
 from .dicts import dicts
@@ -28,40 +28,58 @@ class yinpa_Handles():
         group_id = args.get("group_id")
         message = args.get("message", "")
         if "enable" in message and not Utils.group_enable_check(group_id):
-            DHandles.configdata_set("yinpa_enabled_group",configdata["yinpa_enabled_group"] + [group_id])
+            DHandles.configdata_set("yinpa_enabled_group",DHandles.load_config()["yinpa_enabled_group"] + [group_id])
             await send_message(websocket, "本群银趴已开启", user_id, group_id)
         elif "disable" in message and Utils.group_enable_check(group_id):
             DHandles.group_remove(group_id)
             await send_message(websocket,"本群银趴已禁用", user_id, group_id)
         else:
             await send_message(websocket,"错误：参数错误！\n命令：yinpa_control <enable/disable>", user_id, group_id)
-    
+
     @staticmethod
     async def sign_in(websocket, args):
-        """处理签到
-        """
         user_id = args.get("user_id")
         group_id = args.get("group_id")
         message = args.get("message", "")
-        
+
         if not Utils.group_enable_check(group_id):
-            await send_message(websocket,"本群银趴已禁用", user_id, group_id)
+            await send_message(websocket, "本群银趴已禁用", user_id, group_id)
             return
         if not Utils.yinpa_user_presence_check(user_id):
-            await send_message(websocket,"您还未加入银趴！\ntips：请使用 yinpa_join 或 加入银趴", user_id, group_id)
+            await send_message(websocket, "您还未加入银趴！\ntips：请使用 yinpa_join 或 加入银趴", user_id, group_id)
             return
-        uid: str = user_id
-        if data[uid]["last_sign_in_time"] < (int)(time.time() / 86400):
-            DHandles.data_set(uid,"last_sign_in_time",(int)(time.time() / 86400))
-            d_pl = Utils.dice(100,(int)(data[uid]['penis_length']) ^ 1)
-            d_vd = Utils.dice(100,(int)(data[uid]['vagina_depth']) ^ 2)
-            d_m = Utils.dice(100,(int)(data[uid]['money']) ^ 3)
-            await send_message(websocket,f"{data[uid]['name']}签到成功\n长度增加：{data[uid]['penis_length']} + (1d100 / 100) = {data[uid]['penis_length']} + ({d_pl} / 100) = {round(data[uid]['penis_length'] + d_pl / 100,2)}\n深度增加：{data[uid]['vagina_depth']} + (1d100 / 100) = {data[uid]['vagina_depth']} + ({d_vd} / 100) = {round(data[uid]['vagina_depth'] + d_vd / 100,2)}\n金钱增加：{data[uid]['money']} + 1d100 = {data[uid]['money']} + {d_m} = {data[uid]['money'] + d_m}\nps：签到于早上8点刷新", user_id, group_id)
-            DHandles.data_set(uid,'penis_length',round(data[uid]['penis_length'] + d_pl / 100,2))
-            DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d_vd / 100,2))
-            DHandles.data_set(uid,'money',data[uid]['money'] + d_m)
+
+        user_data = DHandles.load_user(user_id)
+        if user_data is None:
+            return
+
+        today = int(time.time() / 86400)
+        if user_data.get("last_sign_in_time", 0) < today:
+            user_data["last_sign_in_time"] = today
+
+            d_pl = Utils.dice(100, int(user_data['penis_length']) ^ 1)
+            d_vd = Utils.dice(100, int(user_data['vagina_depth']) ^ 2)
+            d_m = Utils.dice(100, int(user_data['money']) ^ 3)
+
+            new_pl = round(user_data['penis_length'] + d_pl / 100, 2)
+            new_vd = round(user_data['vagina_depth'] + d_vd / 100, 2)
+            new_money = user_data['money'] + d_m
+
+            user_data['penis_length'] = new_pl
+            user_data['vagina_depth'] = new_vd
+            user_data['money'] = new_money
+
+            DHandles.save_user(user_id, user_data)
+
+            await send_message(websocket,
+                               f"{user_data['name']}签到成功\n"
+                               f"长度增加：{user_data['penis_length']} + ({d_pl}/100) = {new_pl}\n"
+                               f"深度增加：{user_data['vagina_depth']} + ({d_vd}/100) = {new_vd}\n"
+                               f"金钱增加：{user_data['money']} + {d_m} = {new_money}\n"
+                               "ps：签到于早上8点刷新",
+                               user_id, group_id)
         else:
-            await send_message(websocket,"你今天已经打过卡了呢~\nps：签到于早上8点刷新，别问我为什么", user_id, group_id)
+            await send_message(websocket, "你今天已经打过卡了呢~\nps：签到于早上8点刷新，别问我为什么", user_id, group_id)
 
     @staticmethod
     async def yinpa_join(websocket, args):
@@ -70,7 +88,7 @@ class yinpa_Handles():
         user_id = args.get("user_id")
         group_id = args.get("group_id")
         message = args.get("message", "")
-        
+
         if not Utils.group_enable_check(group_id):
             await send_message(websocket,"本群银趴已禁用，你不准参加银趴！", user_id, group_id)
             return
@@ -100,36 +118,50 @@ class yinpa_Handles():
         if Utils.find_user_name(name):
             await send_message(websocket,f"已经有人使用这个昵称了！{Utils.find_user_name(name)}", user_id, group_id)
             return
-        DHandles.user_add(uid,{
-            'name':name,
-            'species':species,
-            'sex_value':plugin_config.chikari_yinpa_initial_sex_value,
-            'penis_length':plugin_config.chikari_yinpa_initial_penis_length,
-            'vagina_depth':plugin_config.chikari_yinpa_initial_vagina_depth,
-            'strength':dicts.species_initial_ability[species][0][0] + Utils.dice(dicts.species_initial_ability[species][0][1],species ^ 4),
-            'constitution':dicts.species_initial_ability[species][1][0] + Utils.dice(dicts.species_initial_ability[species][1][1],species ^ 5),
-            'technique':dicts.species_initial_ability[species][2][0] + Utils.dice(dicts.species_initial_ability[species][2][1],species ^ 6),
-            'volition':dicts.species_initial_ability[species][3][0] + Utils.dice(dicts.species_initial_ability[species][3][1],species ^ 7),
-            'intelligence':dicts.species_initial_ability[species][4][0] + Utils.dice(dicts.species_initial_ability[species][4][1],species ^ 8),
-            'charm':dicts.species_initial_ability[species][5][0] + Utils.dice(dicts.species_initial_ability[species][5][1],species ^ 9),
-            'money':plugin_config.chikari_yinpa_initial_money,
-            'state':[],
-            "passive_times":0,
-            "active_times":0,
-            "last_sign_in_time":0,
-            "last_operation_time":0,
-            "last_refresh_time": time.time(),
-            "next_work_time":0,
-        })
-        skill = []
+
+        user_data = {
+            'name': name,
+            'species': species,
+            'sex_value': plugin_config.chikari_yinpa_initial_sex_value,
+            'penis_length': plugin_config.chikari_yinpa_initial_penis_length,
+            'vagina_depth': plugin_config.chikari_yinpa_initial_vagina_depth,
+            'strength': dicts.species_initial_ability[species][0][0] + Utils.dice(
+                dicts.species_initial_ability[species][0][1], species ^ 4),
+            'constitution': dicts.species_initial_ability[species][1][0] + Utils.dice(
+                dicts.species_initial_ability[species][1][1], species ^ 5),
+            'technique': dicts.species_initial_ability[species][2][0] + Utils.dice(
+                dicts.species_initial_ability[species][2][1], species ^ 6),
+            'volition': dicts.species_initial_ability[species][3][0] + Utils.dice(
+                dicts.species_initial_ability[species][3][1], species ^ 7),
+            'intelligence': dicts.species_initial_ability[species][4][0] + Utils.dice(
+                dicts.species_initial_ability[species][4][1], species ^ 8),
+            'charm': dicts.species_initial_ability[species][5][0] + Utils.dice(
+                dicts.species_initial_ability[species][5][1], species ^ 9),
+            'money': plugin_config.chikari_yinpa_initial_money,
+            'state': [],
+            'passive_times': 0,
+            'active_times': 0,
+            'last_sign_in_time': 0,
+            'last_operation_time': 0,
+            'last_refresh_time': time.time(),
+            'next_work_time': 0,
+            'skill': []  # 后面再赋值
+        }
+        # 计算技能
+        skill_list = []
         for i in dicts.species_initial_ability[species][6]:
-            skill.append([i,0,1])
-        DHandles.data_set(uid,"skill",skill)
+            skill_list.append([i, None, 1])  # 附加数据用 None 表示无
+        user_data['skill'] = skill_list
+
         obj = md5("Chikari`s salt".encode("utf-8"))
-        obj.update(f"{uid}".encode("utf-8"))
-        DHandles.data_set(uid,"md5",obj.hexdigest())
-        await send_message(websocket,"成功加入银趴！", user_id, group_id)
-        await send_message(websocket,get_image(Utils.get_user_info_image(uid)), user_id, group_id)
+        obj.update(f"{user_id}".encode("utf-8"))
+        user_data['md5'] = obj.hexdigest()
+
+        # 保存用户
+        DHandles.save_user(user_id, user_data)
+
+        await send_message(websocket, "成功加入银趴！", user_id, group_id)
+        await send_message(websocket, get_image(Utils.get_user_info_image(user_id)), user_id, group_id)
 
     @staticmethod
     async def yinpa_leave(websocket, args):
@@ -142,18 +174,19 @@ class yinpa_Handles():
         if not Utils.group_enable_check(group_id):
             await send_message(websocket,"本群银趴已禁用", user_id, group_id)
             return
-        if not Utils.yinpa_user_presence_check(user_id):
-            await send_message(websocket,"您还未加入银趴！\n请使用 join_yinpa 或 加入银趴", user_id, group_id)
+        user_data = DHandles.load_user(user_id)
+        if not user_data:
+            await send_message(websocket, "您还未加入银趴！", user_id, group_id)
             return
         uid: str=user_id
         command: str = message.split(' ', 1)[1] if ' ' in message else None
-        if not command or not data[uid]["md5"] or command != data[uid]["md5"]:
+        if not command or not user_data["md5"] or command != user_data["md5"]:
             obj = md5("Chikari`s salt".encode("utf-8"))
             obj.update(f"{uid}".encode("utf-8"))
             DHandles.data_set(uid,"md5",obj.hexdigest())
             await send_message(websocket,f"警告：这将清除你的所有银趴数据！\n请输入 yinpa_leave {obj.hexdigest()} 以完成操作", user_id, group_id)
         else:
-            name = data[uid]['name']
+            name = user_data['name']
             DHandles.user_remove(uid)
             await send_message(websocket,f"离开银趴成功。\n大家会记住你的，{name}", user_id, group_id)
 
@@ -273,13 +306,13 @@ class yinpa_Handles():
             at = [at[0]]
         uid: str = user_id
         if not at or at == ['all']:
-            if not data.get(uid):
+            if not not Utils.yinpa_user_presence_check(uid):
                 await send_message(websocket,"错误：你还没加入银趴！", user_id, group_id)
                 return
             await send_message(websocket,get_image(Utils.get_user_info_image(uid)), user_id, group_id)
         else:
             at = at[0]
-            if not data.get(at):
+            if not Utils.yinpa_user_presence_check(at):
                 await send_message(websocket,"错误：目标还没加入银趴！", user_id, group_id)
                 return
             await send_message(websocket,get_image(Utils.get_user_info_image(at)), user_id, group_id)
@@ -328,18 +361,20 @@ class yinpa_Handles():
             return
         Utils.refresh_data(uid)
         Utils.refresh_data(at)
+        user_data = DHandles.load_user(user_id)
+        at_data = DHandles.load_user(at)
         oc = Utils.operation_check(uid)
         if oc:
             await send_message(websocket,f"错误：操作失败！\n原因：{oc}", user_id, group_id)
             return
         if Utils.get_state(at,2):
-            await send_message(websocket,f"错误：操作失败！\n原因：hentai! 连昏迷的{data[at]['name']}都不放过!", user_id, group_id)
+            await send_message(websocket,f"错误：操作失败！\n原因：hentai! 连昏迷的{at_data['name']}都不放过!", user_id, group_id)
             return
-        pl = (int)(data[uid]['penis_length']) * 4
+        pl = (int)(user_data['penis_length']) * 4
         if pl >= 80:
             pl = 80 + sqrt(pl - 80)
-        atk_u = Utils.get_attack_list(uid,at) + [[pl,f"{data[uid]['name']}：长度",False]]
-        str_u = f"{data[at]['name']}受到的伤害：1d50"
+        atk_u = Utils.get_attack_list(uid,at) + [[pl,f"{user_data['name']}：长度",False]]
+        str_u = f"{at_data['name']}受到的伤害：1d50"
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
@@ -374,11 +409,11 @@ class yinpa_Handles():
         if res_u <= 0:
             res_u = 0
             str_u += " = 0"
-        vd = (int)(data[at]['vagina_depth']) * 4
+        vd = (int)(at_data['vagina_depth']) * 4
         if vd >= 80:
             vd = 80 + sqrt(vd - 80)
-        atk_t = Utils.get_attack_list(at,uid) + [[vd,f"{data[at]['name']}：深度",False]]
-        str_t = f"{data[uid]['name']}受到的伤害：1d50"
+        atk_t = Utils.get_attack_list(at,uid) + [[vd,f"{at_data['name']}：深度",False]]
+        str_t = f"{user_data['name']}受到的伤害：1d50"
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
@@ -423,9 +458,9 @@ class yinpa_Handles():
             hp_str += "（体质）"
         rh_str_u = Utils.reduce_hp(uid,res_t)
         rh_str_t = Utils.reduce_hp(at,res_u)
-        DHandles.data_set(uid,"active_times",data[uid]["active_times"] + 1)
-        DHandles.data_set(at,"passive_times",data[at]["passive_times"] + 1)
-        await send_message(websocket, get_image(Utils.text_to_image(f"{data[uid]['name']}透了{data[at]['name']}\n" + str_t + "\n" + str_u + hp_str +  rh_str_u +  rh_str_t)), user_id, group_id)
+        DHandles.data_set(uid,"active_times",user_data["active_times"] + 1)
+        DHandles.data_set(at,"passive_times",at_data["passive_times"] + 1)
+        await send_message(websocket, get_image(Utils.text_to_image(f"{user_data['name']}透了{at_data['name']}\n" + str_t + "\n" + str_u + hp_str +  rh_str_u +  rh_str_t)), user_id, group_id)
         
     @staticmethod
     async def yinpa_zha(websocket, args):
@@ -472,17 +507,19 @@ class yinpa_Handles():
         oc = Utils.operation_check(uid)
         Utils.refresh_data(uid)
         Utils.refresh_data(at)
+        user_data = DHandles.load_user(user_id)
+        at_data = DHandles.load_user(at)
         if oc:
             await send_message(websocket,f"错误：操作失败！\n原因：{oc}", user_id, group_id)
             return
         if Utils.get_state(at,2):
-            await send_message(websocket,f"错误：操作失败！\n原因：hentai!连昏迷的{data[at]['name']}都不放过吗!", user_id, group_id)
+            await send_message(websocket,f"错误：操作失败！\n原因：hentai!连昏迷的{at_data['name']}都不放过吗!", user_id, group_id)
             return
-        vd = (int)(data[uid]['vagina_depth']) * 4
+        vd = (int)(user_data['vagina_depth']) * 4
         if vd >= 80:
             vd = 80 + sqrt(vd - 80)
-        atk_u = Utils.get_attack_list(uid,at) + [[vd,f"{data[uid]['name']}：深度",False]]
-        str_u = f"{data[at]['name']}受到的伤害：1d50"
+        atk_u = Utils.get_attack_list(uid,at) + [[vd,f"{user_data['name']}：深度",False]]
+        str_u = f"{at_data['name']}受到的伤害：1d50"
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
@@ -517,11 +554,11 @@ class yinpa_Handles():
         if res_u <= 0:
             res_u = 0
             str_u += " = 0"
-        pl = (int)(data[at]['penis_length']) * 4
+        pl = (int)(at_data['penis_length']) * 4
         if pl >= 80:
             pl = 80 + sqrt(pl - 80)
-        atk_t = Utils.get_attack_list(at,uid) + [[pl,f"{data[at]['name']}：长度",False]]
-        str_t = f"{data[uid]['name']}受到的伤害：1d50"
+        atk_t = Utils.get_attack_list(at,uid) + [[pl,f"{at_data['name']}：长度",False]]
+        str_t = f"{user_data['name']}受到的伤害：1d50"
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
@@ -566,9 +603,9 @@ class yinpa_Handles():
             hp_str += "（体质）"
         rh_str_u = Utils.reduce_hp(uid,res_t)
         rh_str_t = Utils.reduce_hp(at,res_u)
-        DHandles.data_set(uid,"active_times",data[uid]["active_times"] + 1)
-        DHandles.data_set(at,"passive_times",data[at]["passive_times"] + 1)
-        await send_message(websocket,get_image(Utils.text_to_image(f"{data[uid]['name']}榨了{data[at]['name']}\n" + str_t  + "\n" + str_u + hp_str + rh_str_u + rh_str_t)), user_id, group_id)
+        DHandles.data_set(uid,"active_times",user_data["active_times"] + 1)
+        DHandles.data_set(at,"passive_times",at_data["passive_times"] + 1)
+        await send_message(websocket,get_image(Utils.text_to_image(f"{user_data['name']}榨了{at_data['name']}\n" + str_t  + "\n" + str_u + hp_str + rh_str_u + rh_str_t)), user_id, group_id)
         
     @staticmethod
     async def yinpa_chong(websocket, args):
@@ -590,17 +627,18 @@ class yinpa_Handles():
             await send_message(websocket,f"错误：操作失败！\n原因：{oc}", user_id, group_id)
             return
         Utils.refresh_data(uid)
+        user_data = DHandles.load_user(user_id)
         d = Utils.dice(100,uid)
         hp = Utils.get_value(uid,"hp")
         if Utils.get_state(uid, 4):
-            pl_str = f"长度： {data[uid]['penis_length']} → {round(data[uid]['penis_length'] + d / 100 - 0.5, 2)} + {round(d / 100, 2)}"
-            DHandles.data_set(uid, 'penis_length', round(data[uid]['penis_length'] + d / 100 - 0.5 + d / 100, 2))
+            pl_str = f"长度： {user_data['penis_length']} → {round(user_data['penis_length'] + d / 100 - 0.5, 2)} + {round(d / 100, 2)}"
+            DHandles.data_set(uid, 'penis_length', round(user_data['penis_length'] + d / 100 - 0.5 + d / 100, 2))
         else:
-            pl_str = f"长度： {data[uid]['penis_length']} → {round(data[uid]['penis_length'] + d / 100 - 0.5,2)}"
-            DHandles.data_set(uid,'penis_length',round(data[uid]['penis_length'] + d / 100 - 0.5,2))
+            pl_str = f"长度： {user_data['penis_length']} → {round(user_data['penis_length'] + d / 100 - 0.5,2)}"
+            DHandles.data_set(uid,'penis_length',round(user_data['penis_length'] + d / 100 - 0.5,2))
         hp_str = f"HP： {hp[0]} → {hp[0] - d}"
         rh_str = Utils.reduce_hp(uid,d)
-        await send_message(websocket,f"{data[uid]['name']}冲了一发\n" + pl_str + "\n" + hp_str + rh_str, user_id, group_id)
+        await send_message(websocket,f"{user_data['name']}冲了一发\n" + pl_str + "\n" + hp_str + rh_str, user_id, group_id)
         
     @staticmethod
     async def yinpa_kou(websocket, args):
@@ -622,17 +660,18 @@ class yinpa_Handles():
             await send_message(websocket,f"错误：操作失败！\n原因：{oc}", user_id, group_id)
             return
         Utils.refresh_data(uid)
+        user_data = DHandles.load_user(user_id)
         d = Utils.dice(40,uid)
         hp = Utils.get_value(uid,"hp")
         if Utils.get_state(uid, 4):
-            vd_str = f"深度： {data[uid]['vagina_depth']} → {round(data[uid]['vagina_depth'] + d / 100,2)} + {round(d / 100, 2)}"
-            DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d / 100 + d / 100,2))
+            vd_str = f"深度： {user_data['vagina_depth']} → {round(user_data['vagina_depth'] + d / 100,2)} + {round(d / 100, 2)}"
+            DHandles.data_set(uid,'vagina_depth',round(user_data['vagina_depth'] + d / 100 + d / 100,2))
         else:
-            vd_str = f"深度： {data[uid]['vagina_depth']} → {round(data[uid]['vagina_depth'] + d / 100,2)}"
-            DHandles.data_set(uid,'vagina_depth',round(data[uid]['vagina_depth'] + d / 100,2))
+            vd_str = f"深度： {user_data['vagina_depth']} → {round(user_data['vagina_depth'] + d / 100,2)}"
+            DHandles.data_set(uid,'vagina_depth',round(user_data['vagina_depth'] + d / 100,2))
         hp_str = f"HP： {hp[0]} → {hp[0] - d}"
         rh_str = Utils.reduce_hp(uid,d)
-        await send_message(websocket,f"{data[uid]['name']}扣了一次\n" + vd_str + "\n" + hp_str + rh_str, user_id, group_id)
+        await send_message(websocket,f"{user_data['name']}扣了一次\n" + vd_str + "\n" + hp_str + rh_str, user_id, group_id)
 
     @staticmethod
     async def yinpa_shop(websocket, args):
@@ -671,10 +710,11 @@ class yinpa_Handles():
                     i = (list(dicts.shop_dict.keys()))[(list(dicts.shop_dict.values())).index(i)]
                 i = int(i)
                 price += dicts.shop_price_dict[i]
-            if data[uid]['money'] < price:
-                await send_message(websocket,f"错误：你的金钱并不够买这些商品！\n这些商品的总售价：{price}\n你的金钱：{data[uid]['money']}", user_id, group_id)
+            user_data = DHandles.load_user(user_id)
+            if user_data['money'] < price:
+                await send_message(websocket,f"错误：你的金钱并不够买这些商品！\n这些商品的总售价：{price}\n你的金钱：{user_data['money']}", user_id, group_id)
                 return
-            DHandles.data_set(uid,'money',data[uid]['money'] - price)
+            DHandles.data_set(uid,'money',user_data['money'] - price)
             str = ""
             for i in goods:
                 i = int(i)
@@ -719,7 +759,8 @@ class yinpa_Handles():
         if oc:
             await send_message(websocket,f"错误：操作失败！\n原因：{oc}", user_id, group_id)
             return
-        if data[uid]["next_work_time"] >= time.time():
+        user_data = DHandles.load_user(user_id)
+        if user_data["next_work_time"] >= time.time():
             await send_message(websocket,"你现在正在工作冷却中！", user_id, group_id)
             return
         if work_key in list(dicts.work_dict.values()):
@@ -743,9 +784,9 @@ class yinpa_Handles():
                 DHandles.data_set(uid,"hp_v",0)
                 d = Utils.dice(10,(int)(uid) ^ 100)
                 DHandles.state_refresh(uid,1,time.time() + d * 60)
-                str += f" >= {data[uid]['volition']}\n{data[uid]['name']}失神了！失神状态将持续1d10 = {d}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
+                str += f" >= {user_data['volition']}\n{user_data['name']}失神了！失神状态将持续1d10 = {d}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
             else:
-                str += f" < {data[uid]['volition']}\n"
+                str += f" < {user_data['volition']}\n"
         elif work_key == 3:
             money += (Utils.get_value(uid,'intelligence')[0] + Utils.get_value(uid,'charm')[0] - 60) * Utils.dice(200,(Utils.get_value(uid,'intelligence')[0] + Utils.get_value(uid,'charm')[0])) / 100
             if money < 0:
@@ -754,10 +795,10 @@ class yinpa_Handles():
             d = Utils.dice(100,Utils.get_value(uid,'volition')[0])
             str += f"智力检定：1d100 = {d} "
             if d >= Utils.get_value(uid,'intelligence')[0]:
-                str += f" >= {data[uid]['intelligence']}\n"
+                str += f" >= {user_data['intelligence']}\n"
             else:
                 money += 3 * d
-                str += f" < {data[uid]['intelligence']}\n追加收益：{3 * d}\n"
+                str += f" < {user_data['intelligence']}\n追加收益：{3 * d}\n"
         elif work_key == 4:
             money += (Utils.get_value(uid,'technique')[0] + Utils.get_value(uid,'intelligence')[0] - 100) * Utils.dice(300,(Utils.get_value(uid,'technique')[0] + Utils.get_value(uid,'intelligence')[0])) / 100
             if money < 0:
@@ -774,9 +815,9 @@ class yinpa_Handles():
                 DHandles.data_set(uid,"hp_v",0)
                 d = Utils.dice(10,(int)(uid) ^ 101)
                 DHandles.state_refresh(uid,1,time.time() + d * 3600)
-                str += f" >= {data[uid]['constitution']}\n{data[uid]['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
+                str += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
             else:
-                str += f" < {data[uid]['constitution']}\n"
+                str += f" < {user_data['constitution']}\n"
         elif work_key == 6:
             d = Utils.dice(100,(int)(uid) ^ 102)
             money += (d - 80) * 500
@@ -814,8 +855,8 @@ class yinpa_Handles():
                         i = 'penis_length'
                     elif i == 8:
                         i = 'vagina_depth'
-                    str += f"你的{dicts.attribute_dict[i]}： {data[uid][i]} → {data[uid][i] + d}\n"
-                    DHandles.data_set(uid,i,(data[uid][i] + d))
+                    str += f"你的{dicts.attribute_dict[i]}： {user_data[i]} → {user_data[i] + d}\n"
+                    DHandles.data_set(uid,i,(user_data[i] + d))
                 elif d >= 8 and d <= 10:
                     l = [10,11,12,13,14,15,]
                     i = Utils.dice(len(l),(int)(uid) ^ 106)
@@ -832,11 +873,11 @@ class yinpa_Handles():
                 DHandles.data_set(uid,"hp_v",0)
                 d = Utils.dice(10,(int)(uid) ^ 101)
                 DHandles.state_refresh(uid,1,time.time() + d * 3600)
-                str += f" >= {data[uid]['constitution']}\n{data[uid]['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
+                str += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
             else:
-                str += f" < {data[uid]['constitution']}\n"
+                str += f" < {user_data['constitution']}\n"
         DHandles.data_set(uid,"next_work_time",(time.time() + 3600))
-        DHandles.data_set(uid,"money",data[uid]["money"] + money)
+        DHandles.data_set(uid,"money",user_data["money"] + money)
         str += "一小时内你将无法继续工作"
         await send_message(websocket,get_image(Utils.text_to_image(str)), user_id, group_id)
     @staticmethod
