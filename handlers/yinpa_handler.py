@@ -48,6 +48,8 @@ async def handle_yinpa_command(message_text: str, user_id: str, group_id: str, m
         await yinpa_handler.yinpa_pay(websocket, args)
     elif message_text.startswith("yinpa_set"):
         await yinpa_handler.yinpa_set(websocket, args)
+    elif message_text.startswith("老手礼包"):
+        await yinpa_handler.yinpa_newbie(websocket, args)
     else:
         # 默认响应，显示帮助信息
         await yinpa_handler.yinpa_help(websocket, args)

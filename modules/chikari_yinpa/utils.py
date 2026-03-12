@@ -606,7 +606,7 @@ class Utils:
 
         # 2. 检查是否已领取
         if user_data.get("newbie_reward_claimed", False):
-            return "🎁 你已经领取过新手礼包啦，不能再领了哦~"
+            return "🎁 你已经领取过老手礼包啦，不能再领了nya~"
 
         # 3. 加载旧数据
         old_data = load_old_data()
@@ -657,7 +657,7 @@ class Utils:
         DHandles.save_user(uid, user_data)
 
         # 7. 生成描述文本
-        desc = f"🎉 恭喜你领取新手礼包！\n"
+        desc = f"🎉 恭喜你领取老手礼包！\n"
         desc += f"💰 获得基础金币 {base_gold}"
         if extra_gold > 0:
             desc += f" + {extra_gold}（旧数据加成）"
@@ -669,5 +669,5 @@ class Utils:
         else:
             desc += "✨ 属性未获得额外提升（旧数据中无对应属性）\n"
 
-        desc += "🎁 记得常回来玩哦~"
+        desc += "🎁 qwq~再炸我就去当礼包~"
         return desc

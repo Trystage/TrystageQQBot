@@ -160,7 +160,7 @@ class yinpa_Handles():
         # 保存用户
         DHandles.save_user(user_id, user_data)
 
-        await send_message(websocket, "成功加入银趴！", user_id, group_id)
+        await send_message(websocket, "成功加入银趴！如果你是牢玩家，可以发送“老手礼包”领取喵喵的补偿qwq~", user_id, group_id)
         await send_message(websocket, get_image(Utils.get_user_info_image(user_id)), user_id, group_id)
 
     @staticmethod
@@ -998,4 +998,23 @@ class yinpa_Handles():
             return
         await send_message(websocket, "处理完成", user_id, group_id)
 
+    @staticmethod
+    async def yinpa_newbie(websocket, args):
+        """处理老手礼包领取"""
+        user_id = args.get("user_id")
+        group_id = args.get("group_id")
+
+        if not Utils.group_enable_check(group_id):
+            await send_message(websocket, "本群银趴已禁用", user_id, group_id)
+            return
+
+        # 检查用户是否已加入银趴（未加入也可以领？根据之前逻辑，领礼包需要用户存在）
+        if not Utils.yinpa_user_presence_check(user_id):
+            await send_message(websocket, "您还未加入银趴！请先使用 yinpa_join 加入", user_id, group_id)
+            return
+
+        # 调用 Utils 中的领取函数
+        result = Utils.claim_newbie_reward(user_id)  # 该函数已返回描述文本
+
+        await send_message(websocket, result, user_id, group_id)
 
