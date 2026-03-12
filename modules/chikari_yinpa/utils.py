@@ -467,7 +467,7 @@ class Utils:
             base_level = sk[2] if sk[2] > 0 else 1
             total = sum(i[2] for i in combined)
             compressed = int(math.log(total + 1, 10) * 10)
-            new_level = base_level + compressed * sqrt(base_level)
+            new_level = int (base_level + compressed * sqrt(base_level))
             # 直接调用 skill_refresh 会保存
             result += DHandles.skill_refresh(uid, sk[0], level=int(new_level))
         elif id == 14:
