@@ -815,6 +815,7 @@ class yinpa_Handles():
                 DHandles.data_set(uid,"hp_v",0)
                 d = Utils.dice(10,(int)(uid) ^ 101)
                 DHandles.state_refresh(uid,1,time.time() + d * 3600)
+                user_data = DHandles.load_user(uid)
                 str += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
             else:
                 str += f" < {user_data['constitution']}\n"
@@ -836,6 +837,7 @@ class yinpa_Handles():
                     i = Utils.dice(len(l),(int)(uid) ^ 106)
                     d = Utils.dice(86400,(int)(uid) ^ 107)
                     str += DHandles.state_refresh(uid,i,time.time() + d,level = 1,mode = 'add')
+                    user_data = DHandles.load_user(uid)
                 elif d >= 5 and d <= 7:
                     i = Utils.dice(8,(int)(uid) ^ 108)
                     d = Utils.dice(100,(int)(uid) ^ 109) / 20
@@ -862,6 +864,7 @@ class yinpa_Handles():
                     i = Utils.dice(len(l),(int)(uid) ^ 106)
                     d = Utils.dice(86400,(int)(uid) ^ 107)
                     str += DHandles.skill_refresh(uid,l[i - 1],level = 1,mode = 'add')
+                    user_data = DHandles.load_user(uid)
         if work_key == 7:
             money += (Utils.get_value(uid,'strength')[0] + Utils.get_value(uid,'constitution')[0]) * Utils.dice(200,(Utils.get_value(uid,'strength')[0] + Utils.get_value(uid,'constitution')[0])) / 50
             if money < 0:
@@ -873,6 +876,7 @@ class yinpa_Handles():
                 DHandles.data_set(uid,"hp_v",0)
                 d = Utils.dice(10,(int)(uid) ^ 101)
                 DHandles.state_refresh(uid,1,time.time() + d * 3600)
+                user_data = DHandles.load_user(uid)
                 str += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！失神状态将持续1d10 = {d}小时。（期间无法行动，无法被透，技能失效。）"
             else:
                 str += f" < {user_data['constitution']}\n"
@@ -987,12 +991,14 @@ class yinpa_Handles():
             DHandles.data_set(at,dict,amount)
         elif type == "skill":
             DHandles.skill_refresh(at,dict,None,amount)
+            user_data = DHandles.load_user(at)
         elif type == "state":
             if len(message.split()) < 6:
                 await send_message(websocket, "错误：state需要时长", user_id, group_id)
                 return
             times = int(message.split()[5])
             DHandles.state_refresh(at,dict,time.time() + times, amount)
+            user_data = DHandles.load_user(at)
         else:
             await send_message(websocket,"错误：type can only be 'attr','skill','state'", user_id, group_id)
             return

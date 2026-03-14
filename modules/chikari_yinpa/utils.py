@@ -343,6 +343,7 @@ class Utils:
                     d2 = Utils.dice(10, int(uid) ^ 11)
                     # 添加失神状态
                     DHandles.state_refresh(uid, 1, time() + d2 * 60)
+                    user_data = DHandles.load_user(uid)
                     str_desc += f" >= {user_data['volition']}\n{user_data['name']}失神了！失神状态将持续1d10 = {d2}分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
                 else:
                     d2 = Utils.dice(user_data['volition'], int(uid) ^ 12)
@@ -356,6 +357,7 @@ class Utils:
             state_1 = Utils.get_state(uid, 1)
             if state_1:
                 DHandles.state_refresh(uid, 1, state_1[1] + 60)
+                user_data = DHandles.load_user(uid)
             if user_data["hp_c"] <= 0:
                 d = Utils.dice(100, int(uid) ^ 13)
                 str_desc += f"\n{user_data['name']}高潮了！\n体质检定：1d100 = {d}"
@@ -363,6 +365,7 @@ class Utils:
                     user_data["hp_c"] = 0
                     d2 = Utils.dice(5, int(uid) ^ 14)
                     DHandles.state_refresh(uid, 2, time() + d2 * 3600)
+                    user_data = DHandles.load_user(uid)
                     str_desc += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！昏迷状态将持续1d5 = {d2}小时。（期间无法行动，无法被透，技能失效。）"
                     if Utils.boat(uid):
                         DHandles.skill_refresh(uid, 6, time() + 259200)
@@ -423,6 +426,7 @@ class Utils:
         result = f"你获得了物品：{dicts.shop_dict[id]}\n"
         if id == 1:
             result += DHandles.state_refresh(uid, 3, time() + 3600, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 2:
             user_data['penis_length'] = user_data.get('penis_length', 0) + 2
             user_data['vagina_depth'] = user_data.get('vagina_depth', 0) + 2
@@ -437,6 +441,7 @@ class Utils:
                 result += "意志HP增加了100\n"
             if Utils.get_state(uid, 2):
                 DHandles.state_refresh(uid, 2, time())
+                user_data = DHandles.load_user(uid)
                 result += "已清理昏迷效果\n"
         elif id == 4:
             result += DHandles.skill_refresh(uid, 2, level=1, mode='add')
@@ -553,14 +558,17 @@ class Utils:
         elif id == 15:
             user_data['hp_v'] = 0
             DHandles.state_refresh(uid, 1, time() + 10 * 60)
+            user_data = DHandles.load_user(uid)
             result += f"{user_data['name']}失神了！失神状态将持续10分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
         elif id == 16:
             if not Utils.get_state(uid, 4):
                 result += DHandles.state_refresh(uid, 4, time() + 60 * 60)
+                user_data = DHandles.load_user(uid)
             else:
                 state_4 = Utils.get_state(uid, 4)
                 if state_4:
                     result += DHandles.state_refresh(uid, 4, state_4[1] + 60 * 60)
+                    user_data = DHandles.load_user(uid)
         elif id == 17:
             result += DHandles.skill_refresh(uid, 16, level=1, mode='add')
 
