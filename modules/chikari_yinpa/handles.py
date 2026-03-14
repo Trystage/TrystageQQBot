@@ -378,32 +378,32 @@ class yinpa_Handles():
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}（{i[1]}）"
+                    str_u += f" + {int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_u += f" - {-int(i[0])}（{i[1]}）"
+                    str_u += f" - {-int(i[0])}（{i[1]}）\n"
             else:
                 if i[0] > 0:
-                    str_u += f" + 1d{int(i[0])}（{i[1]}）"
+                    str_u += f" + 1d{int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_u += f" - 1d{-int(i[0])}（{i[1]}）"
+                    str_u += f" - 1d{-int(i[0])}（{i[1]}）\n"
         res_u = Utils.dice(50,uid)
         str_u += f" = {res_u}"
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}"
+                    str_u += f" + {int(i[0])}\n"
                     res_u += int(i[0])
                 elif i[0] < 0:
-                    str_u += f" - {int(i[0])}"
+                    str_u += f" - {int(i[0])}\n"
                     res_u -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(uid) ^ int(i[0]) ^ 101)
-                    str_u += f" + {d}"
+                    str_u += f" + {d}\n"
                     res_u += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(uid) ^ int(i[0]) ^ 102)
-                    str_u += f" - {d}"
+                    str_u += f" - {d}\n"
                     res_u -= d
         str_u += f" = {res_u}\n"
         if res_u <= 0:
@@ -417,32 +417,32 @@ class yinpa_Handles():
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}（{i[1]}）"
+                    str_t += f" + {int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_t += f" - {-int(i[0])}（{i[1]}）"
+                    str_t += f" - {-int(i[0])}（{i[1]}）\n"
             else:
                 if i[0] > 0:
-                    str_t += f" + 1d{int(i[0])}（{i[1]}）"
+                    str_t += f" + 1d{int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_t += f" - 1d{-int(i[0])}（{i[1]}）"
+                    str_t += f" - 1d{-int(i[0])}（{i[1]}）\n"
         res_t = Utils.dice(50,at)
         str_t += f" = {res_t}"
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}"
+                    str_t += f" + {int(i[0])}\n"
                     res_t += int(i[0])
                 elif i[0] < 0:
-                    str_t += f" - {int(i[0])}"
+                    str_t += f" - {int(i[0])}\n"
                     res_t -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(at) ^ int(i[0]) ^ 103)
-                    str_t += f" + {d}"
+                    str_t += f" + {d}\n"
                     res_t += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(at) ^ int(i[0]) ^ 104)
-                    str_t += f" - {d}"
+                    str_t += f" - {d}\n"
                     res_t -= d
         str_t += f" = {res_t}"
         if res_t <= 0:
@@ -523,32 +523,32 @@ class yinpa_Handles():
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}（{i[1]}）"
+                    str_u += f" + {int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_u += f" - {-int(i[0])}（{i[1]}）"
+                    str_u += f" - {-int(i[0])}（{i[1]}）\n"
             else:
                 if i[0] > 0:
-                    str_u += f" + 1d{int(i[0])}（{i[1]}）"
+                    str_u += f" + 1d{int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_u += f" - 1d{-int(i[0])}（{i[1]}）"
+                    str_u += f" - 1d{-int(i[0])}（{i[1]}）\n"
         res_u = Utils.dice(50,uid)
         str_u += f" = {res_u}"
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}"
+                    str_u += f" + {int(i[0])}\n"
                     res_u += int(i[0])
                 elif i[0] < 0:
-                    str_u += f" - {int(i[0])}"
+                    str_u += f" - {int(i[0])}\n"
                     res_u -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(uid) ^ int(i[0]) ^ 101)
-                    str_u += f" + {d}"
+                    str_u += f" + {d}\n"
                     res_u += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(uid) ^ int(i[0]) ^ 102)
-                    str_u += f" - {d}"
+                    str_u += f" - {d}\n"
                     res_u -= d
         str_u += f" = {res_u}\n"
         if res_u <= 0:
@@ -562,32 +562,32 @@ class yinpa_Handles():
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}（{i[1]}）"
+                    str_t += f" + {int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_t += f" - {-int(i[0])}（{i[1]}）"
+                    str_t += f" - {-int(i[0])}（{i[1]}）\n"
             else:
                 if i[0] > 0:
-                    str_t += f" + 1d{int(i[0])}（{i[1]}）"
+                    str_t += f" + 1d{int(i[0])}（{i[1]}）\n"
                 elif i[0] < 0:
-                    str_t += f" - 1d{-int(i[0])}（{i[1]}）"
+                    str_t += f" - 1d{-int(i[0])}（{i[1]}）\n"
         res_t = Utils.dice(50,at)
         str_t += f" = {res_t}"
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}"
+                    str_t += f" + {int(i[0])}\n"
                     res_t += int(i[0])
                 elif i[0] < 0:
-                    str_t += f" - {int(i[0])}"
+                    str_t += f" - {int(i[0])}\n"
                     res_t -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(at) ^ int(i[0]) ^ 103)
-                    str_t += f" + {d}"
+                    str_t += f" + {d}\n"
                     res_t += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(at) ^ int(i[0]) ^ 104)
-                    str_t += f" - {d}"
+                    str_t += f" - {d}\n"
                     res_t -= d
         str_t += f" = {res_t}"
         if res_t <= 0:

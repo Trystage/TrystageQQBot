@@ -1,9 +1,7 @@
 import sqlite3
 import json
-import os
 from pathlib import Path
 from time import time
-from config import CACHE_DIR
 from .dicts import dicts
 
 # 原有文件路径
