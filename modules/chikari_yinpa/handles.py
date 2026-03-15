@@ -391,19 +391,19 @@ class yinpa_Handles():
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}\n"
+                    str_u += f" + {int(i[0])}"
                     res_u += int(i[0])
                 elif i[0] < 0:
-                    str_u += f" - {int(i[0])}\n"
+                    str_u += f" - {int(i[0])}"
                     res_u -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(uid) ^ int(i[0]) ^ 101)
-                    str_u += f" + {d}\n"
+                    str_u += f" + {d}"
                     res_u += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(uid) ^ int(i[0]) ^ 102)
-                    str_u += f" - {d}\n"
+                    str_u += f" - {d}"
                     res_u -= d
         str_u += f" = {res_u}\n"
         if res_u <= 0:
@@ -430,19 +430,19 @@ class yinpa_Handles():
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}\n"
+                    str_t += f" + {int(i[0])}"
                     res_t += int(i[0])
                 elif i[0] < 0:
-                    str_t += f" - {int(i[0])}\n"
+                    str_t += f" - {int(i[0])}"
                     res_t -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(at) ^ int(i[0]) ^ 103)
-                    str_t += f" + {d}\n"
+                    str_t += f" + {d}"
                     res_t += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(at) ^ int(i[0]) ^ 104)
-                    str_t += f" - {d}\n"
+                    str_t += f" - {d}"
                     res_t -= d
         str_t += f" = {res_t}"
         if res_t <= 0:
@@ -536,19 +536,19 @@ class yinpa_Handles():
         for i in atk_u:
             if i[2]:
                 if i[0] > 0:
-                    str_u += f" + {int(i[0])}\n"
+                    str_u += f" + {int(i[0])}"
                     res_u += int(i[0])
                 elif i[0] < 0:
-                    str_u += f" - {int(i[0])}\n"
+                    str_u += f" - {int(i[0])}"
                     res_u -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(uid) ^ int(i[0]) ^ 101)
-                    str_u += f" + {d}\n"
+                    str_u += f" + {d}"
                     res_u += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(uid) ^ int(i[0]) ^ 102)
-                    str_u += f" - {d}\n"
+                    str_u += f" - {d}"
                     res_u -= d
         str_u += f" = {res_u}\n"
         if res_u <= 0:
@@ -575,19 +575,19 @@ class yinpa_Handles():
         for i in atk_t:
             if i[2]:
                 if i[0] > 0:
-                    str_t += f" + {int(i[0])}\n"
+                    str_t += f" + {int(i[0])}"
                     res_t += int(i[0])
                 elif i[0] < 0:
-                    str_t += f" - {int(i[0])}\n"
+                    str_t += f" - {int(i[0])}"
                     res_t -= int(i[0])
             else:
                 if i[0] > 0:
                     d = Utils.dice(int(i[0]),(int)(at) ^ int(i[0]) ^ 103)
-                    str_t += f" + {d}\n"
+                    str_t += f" + {d}"
                     res_t += d
                 elif i[0] < 0:
                     d = Utils.dice(-int(i[0]),(int)(at) ^ int(i[0]) ^ 104)
-                    str_t += f" - {d}\n"
+                    str_t += f" - {d}"
                     res_t -= d
         str_t += f" = {res_t}"
         if res_t <= 0:
