@@ -117,6 +117,7 @@ class Utils:
                 # 需要调用 skill_refresh 来修正，但 skill_refresh 会保存，这里我们手动处理
                 # 简单起见，可以直接调用 DHandles.skill_refresh，它会处理保存
                 DHandles.skill_refresh(uid, i[0], i[1] if len(i) > 1 else None)
+                user_data = DHandles.load_user(uid)
         for i in user_data.get("state", []):
             if len(i) <= 2:
                 DHandles.state_refresh(uid, i[0], i[1] if len(i) > 1 else time())
@@ -168,6 +169,7 @@ class Utils:
         for i in user_data.get("skill", []):
             if len(i) <= 2:
                 DHandles.skill_refresh(uid, i[0], i[1] if len(i) > 1 else None)
+                user_data = DHandles.load_user(uid)
         # 重新加载
         user_data = DHandles.load_user(uid)
         if user_data is None:
@@ -369,6 +371,7 @@ class Utils:
                     str_desc += f" >= {user_data['constitution']}\n{user_data['name']}昏迷了！昏迷状态将持续1d5 = {d2}小时。（期间无法行动，无法被透，技能失效。）"
                     if Utils.boat(uid):
                         DHandles.skill_refresh(uid, 6, time() + 259200)
+                        user_data = DHandles.load_user(uid)
                         str_desc += f"\n{user_data['name']}的舰装破损了！将进入三天的冷却。"
                 else:
                     d2 = Utils.dice(user_data['constitution'], int(uid) ^ 15)
@@ -445,23 +448,32 @@ class Utils:
                 result += "已清理昏迷效果\n"
         elif id == 4:
             result += DHandles.skill_refresh(uid, 2, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 5:
             result += DHandles.skill_refresh(uid, 3, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 6:
             result += DHandles.skill_refresh(uid, 4, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 7:
             result += DHandles.skill_refresh(uid, 5, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 8:
             result += DHandles.skill_refresh(uid, 6, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 9:
             result += DHandles.skill_refresh(uid, 7, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 10:
             result += DHandles.skill_refresh(uid, 8, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 11:
             result += DHandles.skill_refresh(uid, 9, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
         elif id == 12:
             for i in [10, 11, 12, 13, 14, 15]:
                 DHandles.skill_refresh(uid, i, level=0)
+                user_data = DHandles.load_user(uid)
             result += "已清除所有诅咒"
         elif id == 13:
             # 需要用户数据中的 skill
@@ -475,6 +487,7 @@ class Utils:
             new_level = int (base_level + compressed * sqrt(base_level))
             # 直接调用 skill_refresh 会保存
             result += DHandles.skill_refresh(uid, sk[0], level=int(new_level))
+            user_data = DHandles.load_user(uid)
         elif id == 14:
             d = Utils.dice(10, 13)
             result += f"1d10 = {d}"
@@ -571,6 +584,7 @@ class Utils:
                     user_data = DHandles.load_user(uid)
         elif id == 17:
             result += DHandles.skill_refresh(uid, 16, level=1, mode='add')
+            user_data = DHandles.load_user(uid)
 
         # 保存修改（除了已经通过 DHandles 方法保存的，还有本地修改的）
         DHandles.save_user(uid, user_data)
