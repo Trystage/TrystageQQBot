@@ -616,16 +616,7 @@ class Utils:
 
     @staticmethod
     def claim_newbie_reward(uid: str) -> str:
-        """领取新手礼包（仅可领取一次）
-
-        奖励规则：
-        - 基础金币 +1000
-        - 如果旧数据中存在该用户，则额外获得：
-            * 金币增加 = √(旧金钱) 取整
-            * 力量、体质、技巧、意志、智力、魅力 各增加 √(旧属性) 取整
-            * 长度、深度 各增加 √(旧值) 取整（保留一位小数）
-        - 如果旧数据中不存在，则仅获得基础金币。
-        """
+        """领取老手礼包（仅可领取一次）"""
         # 1. 加载当前用户数据
         user_data = DHandles.load_user(uid)
         if user_data is None:
@@ -639,7 +630,7 @@ class Utils:
         old_data = load_old_data()
         old_user = old_data.get(uid)
 
-        # 4. 计算奖励
+        # 4. 计算奖励（基础属性部分）
         base_gold = 1000
         extra_gold = 0
         attr_boosts = {
@@ -652,38 +643,61 @@ class Utils:
             "penis_length": 0.0,
             "vagina_depth": 0.0,
         }
+        # 技能奖励列表，格式 [(skill_id, new_level), ...]
+        skill_boosts = []
 
         if old_user:
             # 金钱奖励
             old_money = old_user.get("money", 0)
-            extra_gold = int(math.isqrt(int(old_money))) if old_money >= 0 else 0  # sqrt取整
+            extra_gold = int(math.isqrt(int(old_money))) if old_money >= 0 else 0
 
-            # 属性奖励（取整）
+            # 属性奖励
             for attr in ["strength", "constitution", "technique", "volition", "intelligence", "charm"]:
                 old_val = old_user.get(attr, 0)
                 boost = int(math.isqrt(int(old_val))) if old_val >= 0 else 0
                 attr_boosts[attr] = boost
 
-            # 长度/深度（保留一位小数）
+            # 长度/深度奖励
             for attr in ["penis_length", "vagina_depth"]:
                 old_val = old_user.get(attr, 0.0)
                 boost = round(math.sqrt(max(old_val, 0)), 1)
                 attr_boosts[attr] = boost
-        else:
-            # 无旧数据，仅给基础金币
-            pass
 
-        # 5. 更新用户数据
+            # 技能奖励：遍历旧技能，对每个等级 sqrt 取整
+            old_skills = old_user.get("skill", [])
+            for skill in old_skills:
+                if len(skill) >= 3:
+                    skill_id = skill[0]
+                    old_level = skill[2]
+                    new_level = int(math.isqrt(int(old_level))) if old_level > 0 else 0
+                    if new_level > 0:
+                        skill_boosts.append((skill_id, new_level))
+
+        # 5. 更新用户数据（基础属性）
         user_data["money"] = user_data.get("money", 0) + base_gold + extra_gold
         for attr, boost in attr_boosts.items():
             user_data[attr] = user_data.get(attr, 0) + boost
 
+        # 6. 更新技能
+        if "skill" not in user_data:
+            user_data["skill"] = []
+        existing_skills = {sk[0]: i for i, sk in enumerate(user_data["skill"])}  # 技能ID到索引的映射
+        for skill_id, add_level in skill_boosts:
+            if skill_id in existing_skills:
+                # 已有该技能，增加等级
+                idx = existing_skills[skill_id]
+                user_data["skill"][idx][2] += add_level
+            else:
+                # 没有该技能，添加（value 设为 None）
+                user_data["skill"].append([skill_id, None, add_level])
+
+        # 7. 标记已领取
         user_data["newbie_reward_claimed"] = True
 
-        # 6. 保存
+        # 8. 保存
         DHandles.save_user(uid, user_data)
 
-        # 7. 生成描述文本
+        # 9. 生成描述文本
         desc = f"🎉 恭喜你领取老手礼包！\n"
         desc += f"💰 获得基础金币 {base_gold}"
         if extra_gold > 0:
@@ -693,8 +707,12 @@ class Utils:
         boosted_attrs = [f"{attr} +{boost}" for attr, boost in attr_boosts.items() if boost > 0]
         if boosted_attrs:
             desc += "✨ 属性提升：" + "，".join(boosted_attrs) + "\n"
+
+        if skill_boosts:
+            skill_desc = "✨ 技能提升：" + "，".join([f"{dicts.skill_dict[sid]} +{lv}" for sid, lv in skill_boosts]) + "\n"
+            desc += skill_desc
         else:
-            desc += "✨ 属性未获得额外提升（旧数据中无对应属性）\n"
+            desc += "✨ 技能未获得额外提升（旧数据中无技能）\n"
 
         desc += "🎁 qwq~再炸我就去当礼包~"
         return desc
