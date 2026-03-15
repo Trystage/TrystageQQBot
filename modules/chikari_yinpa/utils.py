@@ -429,52 +429,56 @@ class Utils:
         result = f"你获得了物品：{dicts.shop_dict[id]}\n"
         if id == 1:
             result += DHandles.state_refresh(uid, 3, time() + 3600, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 2:
             user_data['penis_length'] = user_data.get('penis_length', 0) + 2
             user_data['vagina_depth'] = user_data.get('vagina_depth', 0) + 2
             result += "长度增加了2cm，深度增加了2cm\n"
+            DHandles.save_user(uid, user_data)
+            return result
         elif id == 3:
             hp = Utils.get_value(uid, "hp")
             if hp[1]:
                 user_data["hp_c"] = user_data.get("hp_c", 0) + 100
                 result += "体质HP增加了100\n"
+                DHandles.save_user(uid, user_data)
             else:
                 user_data["hp_v"] = user_data.get("hp_v", 0) + 100
                 result += "意志HP增加了100\n"
+                DHandles.save_user(uid, user_data)
             if Utils.get_state(uid, 2):
                 DHandles.state_refresh(uid, 2, time())
-                user_data = DHandles.load_user(uid)
                 result += "已清理昏迷效果\n"
+            return result
         elif id == 4:
             result += DHandles.skill_refresh(uid, 2, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 5:
             result += DHandles.skill_refresh(uid, 3, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 6:
             result += DHandles.skill_refresh(uid, 4, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 7:
             result += DHandles.skill_refresh(uid, 5, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 8:
             result += DHandles.skill_refresh(uid, 6, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 9:
             result += DHandles.skill_refresh(uid, 7, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 10:
             result += DHandles.skill_refresh(uid, 8, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 11:
             result += DHandles.skill_refresh(uid, 9, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 12:
             for i in [10, 11, 12, 13, 14, 15]:
                 DHandles.skill_refresh(uid, i, level=0)
-                user_data = DHandles.load_user(uid)
             result += "已清除所有诅咒"
+            return result
         elif id == 13:
             # 需要用户数据中的 skill
             skills = user_data.get("skill", [])
@@ -487,7 +491,7 @@ class Utils:
             new_level = int (base_level + compressed * sqrt(base_level))
             # 直接调用 skill_refresh 会保存
             result += DHandles.skill_refresh(uid, sk[0], level=int(new_level))
-            user_data = DHandles.load_user(uid)
+            return result
         elif id == 14:
             d = Utils.dice(10, 13)
             result += f"1d10 = {d}"
@@ -568,23 +572,24 @@ class Utils:
                     d4 = Utils.dice(100, 139)
                     user_data['money'] += d4 * 1000 * si
                     result += f"\n1d9 = 9，1d100 = {d4}\n金钱变化 {d4*1000*si}，当前 {user_data['money']}"
+            DHandles.save_user(uid, user_data)
+            return result
         elif id == 15:
             user_data['hp_v'] = 0
             DHandles.state_refresh(uid, 1, time() + 10 * 60)
-            user_data = DHandles.load_user(uid)
             result += f"{user_data['name']}失神了！失神状态将持续10分钟。（期间无法行动，技能失效。如果失神期间受到攻击，失神状态将延长一分钟。）"
+            return result
         elif id == 16:
             if not Utils.get_state(uid, 4):
                 result += DHandles.state_refresh(uid, 4, time() + 60 * 60)
-                user_data = DHandles.load_user(uid)
             else:
                 state_4 = Utils.get_state(uid, 4)
                 if state_4:
                     result += DHandles.state_refresh(uid, 4, state_4[1] + 60 * 60)
-                    user_data = DHandles.load_user(uid)
+            return result
         elif id == 17:
             result += DHandles.skill_refresh(uid, 16, level=1, mode='add')
-            user_data = DHandles.load_user(uid)
+            return result
 
         # 保存修改（除了已经通过 DHandles 方法保存的，还有本地修改的）
         DHandles.save_user(uid, user_data)
