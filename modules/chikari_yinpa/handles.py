@@ -65,11 +65,6 @@ class yinpa_Handles():
             new_vd = round(user_data['vagina_depth'] + d_vd / 100, 2)
             new_money = user_data['money'] + d_m
 
-            user_data['penis_length'] = new_pl
-            user_data['vagina_depth'] = new_vd
-            user_data['money'] = new_money
-
-            DHandles.save_user(user_id, user_data)
 
             await send_message(websocket,
                                f"{user_data['name']}签到成功\n"
@@ -78,6 +73,12 @@ class yinpa_Handles():
                                f"金钱增加：{user_data['money']} + {d_m} = {new_money}\n"
                                "ps：签到于早上8点刷新，如果你是牢玩家，可以发送“老手礼包”领取喵喵的补偿qwq~",
                                user_id, group_id)
+
+            user_data['penis_length'] = new_pl
+            user_data['vagina_depth'] = new_vd
+            user_data['money'] = new_money
+
+            DHandles.save_user(user_id, user_data)
         else:
             await send_message(websocket, "你今天已经打过卡了呢~\nps：签到于早上8点刷新，别问我为什么", user_id, group_id)
 
