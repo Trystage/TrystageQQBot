@@ -301,8 +301,11 @@ class yinpa_Handles():
                         at = [f_uid]
                         break
                 if not f_uid:
-                    await send_message(websocket,"错误：未找到目标！", user_id, group_id)
-                    return
+                    if len(arg_list) == 1:
+                        at = user_id
+                    else:
+                        await send_message(websocket,"错误：未找到目标！", user_id, group_id)
+                        return
         else:
             at = [at[0]]
         uid: str = user_id
