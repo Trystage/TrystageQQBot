@@ -464,7 +464,7 @@ class yinpa_Handles():
         rh_str_t = Utils.reduce_hp(at,res_u)
         DHandles.data_set(uid,"active_times",user_data["active_times"] + 1)
         DHandles.data_set(at,"passive_times",at_data["passive_times"] + 1)
-        await send_message(websocket, get_image(Utils.text_to_image(f"{user_data['name']}透了{at_data['name']}\n" + str_t + "\n" + str_u + hp_str +  rh_str_u +  rh_str_t)), user_id, group_id)
+        await send_message(websocket, f"{user_data['name']}透了{at_data['name']}\n" + str_t + "\n" + str_u + hp_str +  rh_str_u +  rh_str_t, user_id, group_id)
         
     @staticmethod
     async def yinpa_zha(websocket, args):
@@ -609,7 +609,7 @@ class yinpa_Handles():
         rh_str_t = Utils.reduce_hp(at,res_u)
         DHandles.data_set(uid,"active_times",user_data["active_times"] + 1)
         DHandles.data_set(at,"passive_times",at_data["passive_times"] + 1)
-        await send_message(websocket,get_image(Utils.text_to_image(f"{user_data['name']}榨了{at_data['name']}\n" + str_t  + "\n" + str_u + hp_str + rh_str_u + rh_str_t)), user_id, group_id)
+        await send_message(websocket,f"{user_data['name']}榨了{at_data['name']}\n" + str_t  + "\n" + str_u + hp_str + rh_str_u + rh_str_t, user_id, group_id)
         
     @staticmethod
     async def yinpa_chong(websocket, args):
