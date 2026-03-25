@@ -1,5 +1,7 @@
 import json
 from modules.chikari_yinpa.handles import yinpa_Handles
+from random import randint,seed
+import time
 
 # 初始化银趴处理类
 yinpa_handler = yinpa_Handles()
@@ -13,6 +15,9 @@ async def handle_yinpa_command(message_text: str, user_id: str, group_id: str, m
         "message": message_text,
         "message_type": message_type
     }
+
+    seed(int(time.time()) ^ 1145141919810)
+    time.sleep(randint(2, 4))
 
     # 根据命令类型调用相应的处理函数
     if message_text.startswith("yinpa_control") or message_text.startswith("银趴控制"):
