@@ -21,7 +21,7 @@ async def send_response(websocket, user_id, group_id, message_type, message):
 
 
 def get_image(path: str):
-    return f"[CQ:image,file=file:///{path}]"
+    return f"[CQ:image,file=file://{path}]"
 async def send_message(websocket, message, user_id=None, group_id=None):
     """发送消息到指定用户或群组"""
     if user_id is None and group_id is None:
