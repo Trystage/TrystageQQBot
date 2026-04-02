@@ -2,16 +2,18 @@ import sqlite3
 import json
 from pathlib import Path
 from time import time
+
+from config import DATA_DIR
 from .dicts import dicts
 
 # 原有文件路径
-plugin_data_file: Path = Path(__file__).parent / "storage" / "data.json"
-plugin_config_file: Path = Path(__file__).parent / "storage" / "config.json"
+plugin_data_file: Path = DATA_DIR / "chikari_yinpa" / "data.json"
+plugin_config_file: Path = DATA_DIR / "chikari_yinpa" / "config.json"
 
 # 新的 SQLite 数据库路径
-DB_PATH = Path(__file__).parent / "storage" / "user_data.db"
+DB_PATH = DATA_DIR / "chikari_yinpa" / "user_data.db"
 # 旧数据备份文件路径（请根据实际情况调整）
-OLD_DATA_PATH = Path(__file__).parent / "storage" / "data_2025.json"
+OLD_DATA_PATH = DATA_DIR / "chikari_yinpa" / "data_legacy.json"
 
 # 缓存旧数据，避免重复读取
 _old_data_cache = None
