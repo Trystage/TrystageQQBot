@@ -90,8 +90,8 @@ async def handle_message(websocket):
                 elif is_jm_command(message_text):
                     group_id = data.get("group_id", None)
                     # if group_id in GROUP_IDS.JM_GROUP_IDS:
-                        # await handle_jm_command(message_text, str(user_id), str(group_id), message_type, websocket)
-                        # await send_message(websocket, "jm没写好qwq, 卡爆了, 先关了qwq", user_id, group_id)
+                    # await handle_jm_command(message_text, str(user_id), str(group_id), message_type, websocket)
+                    # await send_message(websocket, "jm没写好qwq, 卡爆了, 先关了qwq", user_id, group_id)
                     # 银趴命令的响应由handle_yinpa_command内部处理，不需要额外的response_message
                 else:
                     await handle_chat(message_text, user_id, group_id, message_type, websocket)
@@ -100,7 +100,7 @@ async def handle_message(websocket):
                 if response_message:
                     response_json = json.dumps(response_message)
                     await websocket.send(response_json)
-            
+
             # 处理通知类型（如群成员加入）
             elif "post_type" in data and data["post_type"] == "notice":
 
@@ -122,7 +122,7 @@ async def handle_message(websocket):
                     target_id = data.get("target_id", None)
                     print(f"摸摸头~ {sub_type}, 群号: {group_id}, 用户ID: {user_id}, 目标: {target_id}")
                     if target_id == self_id:
-                        await handle_poke_neko(group_id, user_id,target_id, websocket)
+                        await handle_poke_neko(group_id, user_id, target_id, websocket)
 
         except Exception as e:
             error_msg = truncate_error_message(str(e))
@@ -133,6 +133,7 @@ async def handle_message(websocket):
                 user_id = data.get("user_id")
                 group_id = data.get("group_id", None)
                 await send_message(websocket, f"处理消息时出错: {e}", user_id, group_id)
+
 
 async def on_connect(websocket, path):
     print("连接建立")
@@ -148,11 +149,16 @@ async def on_connect(websocket, path):
 async def main():
     # 初始化数据文件
     FileUtils.initialize_data_files()
-    
-    start_server = await websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT)
-    print("WebSocket 服务器已启动")
-    print(f"运行在ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}/ws")
-    await start_server.wait_closed()
 
+    print("WebSocket 服务器已启动")
+    print(f"运行在ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+    async with websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT):
+        await asyncio.Future()  # 永久运行
+    # start_server = await websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT)
+    # await start_server.wait_closed()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
 if __name__ == "__main__":
     asyncio.run(main())
