@@ -135,7 +135,7 @@ async def handle_message(websocket):
                 await send_message(websocket, f"处理消息时出错: {e}", user_id, group_id)
 
 
-async def on_connect(websocket, path):
+async def on_connect(websocket, path = None):
     print("连接建立")
     try:
         await handle_message(websocket)
