@@ -1,225 +1,215 @@
+import sqlite3
 import json
-import os
-
 from pathlib import Path
 from time import time
 
-from config import CACHE_DIR
+from config import DATA_DIR
 from .dicts import dicts
 
-plugin_data_file: Path = Path(__file__).parent / "storage" / "data.json"
-plugin_config_file: Path = Path(__file__).parent / "storage" / "config.json"
+# 原有文件路径
+plugin_data_file: Path = DATA_DIR / "chikari_yinpa" / "data.json"
+plugin_config_file: Path = DATA_DIR / "chikari_yinpa" / "config.json"
 
-#用户数据文件初始化及载入
+# 新的 SQLite 数据库路径
+DB_PATH = DATA_DIR / "chikari_yinpa" / "user_data.db"
+# 旧数据备份文件路径（请根据实际情况调整）
+OLD_DATA_PATH = DATA_DIR / "chikari_yinpa" / "data_legacy.json"
 
-if not os.path.exists(plugin_data_file):
-    f = open(plugin_data_file,'w')
-    f.close()
-with open(plugin_data_file,encoding='utf-8')as datafile:
-    datastr = datafile.read()
-    if not os.path.exists(plugin_data_file) or not datastr:
-        f = open(plugin_data_file,'w')
-        init_data = {
-            
-        }
-        json.dump(init_data,f,indent=4)
-        f.close()
-        data = init_data
-    else:
-        data = json.loads(datastr,strict=False)
-        
-#配置数据文件初始化及载入
+# 缓存旧数据，避免重复读取
+_old_data_cache = None
 
-if not os.path.exists(plugin_config_file):
-    f = open(plugin_config_file,'w')
-    f.close()
-with open(plugin_config_file,encoding='utf-8')as configfile:
-    configstr = configfile.read()
-    if not os.path.exists(plugin_config_file) or not configstr:
-        f = open(plugin_config_file,'w')
-        init_data = {
-            "yinpa_enabled_group":[],
-        }
-        json.dump(init_data,f,indent=4)
-        f.close()
-        configdata = init_data
-    else:
-        configdata = json.loads(configstr,strict=False)
+def load_old_data():
+    global _old_data_cache
+    if _old_data_cache is None:
+        if OLD_DATA_PATH.exists():
+            with open(OLD_DATA_PATH, 'r', encoding='utf-8') as f:
+                _old_data_cache = json.load(f)
+        else:
+            _old_data_cache = {}
+    return _old_data_cache
+
+def init_db():
+    """初始化数据库，创建 users 表"""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users
+                 (uid TEXT PRIMARY KEY, data TEXT)''')
+    conn.commit()
+    conn.close()
+
+# 在模块加载时初始化数据库
+init_db()
 
 
-class DHandles():
-    """数据处理"""
+class DHandles:
+    """数据处理（用户数据存 SQLite，配置存 JSON）"""
+
+    # ---------- 私有数据库操作方法 ----------
+    @staticmethod
+    def _get_conn():
+        return sqlite3.connect(DB_PATH)
 
     @staticmethod
+    def load_user(uid: str) -> dict:
+        """从数据库加载用户数据，若不存在返回 None"""
+        conn = DHandles._get_conn()
+        c = conn.cursor()
+        c.execute("SELECT data FROM users WHERE uid=?", (uid,))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            return json.loads(row[0])
+        return None
+
+    @staticmethod
+    def save_user(uid: str, user_data: dict):
+        """将用户数据保存到数据库（覆盖）"""
+        conn = DHandles._get_conn()
+        c = conn.cursor()
+        c.execute("REPLACE INTO users (uid, data) VALUES (?, ?)",
+                  (uid, json.dumps(user_data, ensure_ascii=False)))
+        conn.commit()
+        conn.close()
+
+    # ---------- 配置操作方法（仍用 JSON 文件）----------
+    @staticmethod
+    def load_config():
+        """从文件加载配置，返回字典"""
+        if not plugin_config_file.exists():
+            return {"yinpa_enabled_group": []}
+        with open(plugin_config_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+
+    @staticmethod
+    def _save_config(config: dict):
+        """将配置字典写入文件"""
+        with open(plugin_config_file, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)
+
+    # ---------- 原有方法改造 ----------
+    @staticmethod
+    def get_all_uids():
+        """返回所有已注册用户的 uid 列表"""
+        conn = DHandles._get_conn()
+        c = conn.cursor()
+        c.execute("SELECT uid FROM users")
+        rows = c.fetchall()
+        conn.close()
+        return [row[0] for row in rows]
+    @staticmethod
+    def data_set(uid: str, key: str, value):
+        user_data = DHandles.load_user(uid)
+        if user_data is None:
+            user_data = {}
+        user_data[key] = value
+        DHandles.save_user(uid, user_data)
+
+    @staticmethod
+    def configdata_set(key: str, value):
+        config = DHandles.load_config()
+        config[key] = value
+        DHandles._save_config(config)
+
+    @staticmethod
+    def group_remove(group_id: int):
+        config = DHandles.load_config()
+        if group_id in config.get("yinpa_enabled_group", []):
+            config["yinpa_enabled_group"].remove(group_id)
+            DHandles._save_config(config)
+
+    @staticmethod
+    def user_add(uid: str, init_dict: dict):
+        # 计算初始 HP
+        init_dict["hp_v"] = (init_dict.get("volition", 0) + 10) * 5
+        init_dict["hp_c"] = (init_dict.get("constitution", 0) + 10) * 10
+        DHandles.save_user(uid, init_dict)
+
+    @staticmethod
+    def user_remove(uid: str):
+        conn = DHandles._get_conn()
+        c = conn.cursor()
+        c.execute("DELETE FROM users WHERE uid=?", (uid,))
+        conn.commit()
+        conn.close()
+
+    @staticmethod
+    def skill_refresh(uid: str, id: int, value=None, level: int = 1, mode: str = ''):
+        strings = ''
+        user_data = DHandles.load_user(uid)
+        if user_data is None:
+            return f"用户 {uid} 不存在"
+
+        # 确保 skill 字段存在
+        if "skill" not in user_data:
+            user_data["skill"] = []
+
+        skills = user_data["skill"]
+        found = False
+        for i, sk in enumerate(skills):
+            if sk[0] == id:
+                if mode == 'add':
+                    level += sk[2]
+                if level > 1145141919810:
+                    level = 1145141919810
+                    strings += "等级过高,更改为1145141919810\n"
+                skills[i] = [id, value, level]
+                found = True
+                break
+
+        if not found:
+            skills.append([id, value, level])
+
+        # 移除等级 <=0 的技能
+        skills = [sk for sk in skills if sk[2] > 0]
+        user_data["skill"] = skills
+
+        DHandles.save_user(uid, user_data)
+        strings += f"获得技能：{dicts.skill_dict[id]}（等级：{level}）（ID：{id}）\n"
+        return strings
+
+    @staticmethod
+    def state_refresh(uid: str, id: int, value=time(), level: int = 1, mode: str = ''):
+        strings = ''
+        user_data = DHandles.load_user(uid)
+        if user_data is None:
+            return f"用户 {uid} 不存在"
+
+        if "state" not in user_data:
+            user_data["state"] = []
+
+        states = user_data["state"]
+        found = False
+        for i, st in enumerate(states):
+            if st[0] == id:
+                if mode == 'add':
+                    level += st[2]
+                if level > 1145141919810:
+                    level = 1145141919810
+                    strings += "等级过高,更改为1145141919810\n"
+                states[i] = [id, value, level]
+                found = True
+                break
+
+        if not found:
+            states.append([id, value, level])
+
+        # 移除等级 <=0 的状态
+        states = [st for st in states if st[2] > 0]
+        user_data["state"] = states
+
+        DHandles.save_user(uid, user_data)
+
+        duration = int(value - time())
+        strings += f"获得状态：{dicts.state_dict[id]}（等级：{level}）（ID：{id}）（持续时间：{duration}秒）\n"
+        return strings
+
+    # 废弃的方法（可删除或留空）
+    @staticmethod
     def file_save():
-        """将内存中的数据保存至文件
-        """
-
-        global data
-        global configdata
-        f = open(plugin_data_file,'w')
-        json.dump(data,f,indent=4)
-        f.close()
-        f = open(plugin_config_file,'w')
-        json.dump(configdata,f,indent=4)
-        f.close()
-
+        """不再需要，留空避免报错"""
+        pass
 
     @staticmethod
     def data_test_file_save():
-        """将内存中的数据保存至test文件
-        """
-        global data
-        global configdata
-        f = open(Path(f"{CACHE_DIR}/testdata.json"),'w')
-        json.dump(data,f,indent=4)
-        f.close()
-        f = open(Path(f"{CACHE_DIR}/testconfig.json"),'w')
-        json.dump(configdata,f,indent=4)
-        f.close()
-
-    def data_set(uid: str,key: str,value):
-        """设置特定用户的特定数值
-
-        Args:
-            uid (str): 用户id
-            key (str): 数据键值
-            value (_type_): 数据
-        """
-        
-        global data
-        DHandles.file_save()
-        data[uid][key] = value
-        DHandles.file_save()
-        return
-    
-    def configdata_set(key: str,value):
-        """设置配置文件
-
-        Args:
-            key (str): 配置键值
-            value (_type_): 数据
-        """
-        
-        global configdata
-        DHandles.file_save()
-        configdata[key] = value
-        DHandles.file_save()
-        return
-    
-    def group_remove(group_id: int):
-        """将群组移出银趴
-
-        Args:
-            group_id (int): 群组id
-        """
-        
-        global configdata
-        DHandles.file_save()
-        configdata["yinpa_enabled_group"].remove(group_id)
-        DHandles.file_save()
-        return
-    
-    def user_add(uid: str,dict: dict):
-        """将用户加入银趴
-
-        Args:
-            uid (str): 用户id
-            dict (dict): 用户初始数据
-        """
-        
-        global data
-        DHandles.file_save()
-        data[uid] = dict
-        data[uid]["hp_v"] = (data[uid]["volition"] + 10) * 5
-        data[uid]["hp_c"] = (data[uid]["constitution"] + 10) * 10
-        DHandles.file_save()
-        return
-        
-    def user_remove(uid: str):
-        """将用户移出银趴
-
-        Args:
-            uid (str): 用户id
-        """
-        
-        global data
-        DHandles.file_save()
-        del data[uid]
-        DHandles.file_save()
-        return
-    
-    def skill_refresh(uid: str,id: int,value = None,level: int = 1,mode: str = ''):
-        """更新技能
-
-        Args:
-            uid (str): 用户id
-            id (int): 技能id
-            value (_type_, optional): 技能附加数据
-            level (int): 技能等级
-            mode (str): 若为'add'则为增加等级，否则为修改等级（如果未拥有该技能，则固定为修改等级）
-
-        Returns:
-            str: 描述文本
-        """
-        str = ''
-        global data
-        b = False
-        for i in range(len(data[uid]["skill"]) - 1, -1, -1):
-            if data[uid]["skill"][i][0] == id:
-                data[uid]["skill"][i][1] = value
-                if len(data[uid]["skill"][i]) >= 3:
-                    if mode == 'add':
-                        level += data[uid]["skill"][i][2]
-                    if level > 1145141919810:
-                        level = 1145141919810
-                        str += "等级过高,更改为1145141919810\n"
-                    data[uid]["skill"][i][2] = level
-                else:
-                    data[uid]["skill"][i].insert(2,level)
-                b = True
-                break
-            if data[uid]["skill"][i][2] <= 0:
-                del data[uid]["skill"][i]
-        if not b:
-            data[uid]["skill"].append([id,value,level])
-        str += f"获得技能：{dicts.skill_dict[id]}（等级：{level}）（ID：{id}）\n"
-        return str
-    
-    def state_refresh(uid: str,id: int,value = time(),level: int = 1,mode: str = ''):
-        """更新状态
-
-        Args:
-            uid (str): 用户id
-            id (int): 状态id
-            value (_type_, optional): 状态结束时间
-            level (int): 状态等级
-            mode (str): 若为'add'则为增加等级，否则为修改等级（如果未拥有该状态，则固定为修改等级）
-
-        Returns:
-            str: 描述文本
-        """
-        str = ''
-
-        global data
-        b = False
-        for i in range(len(data[uid]["state"])):
-            if data[uid]["state"][i][0] == id:
-                data[uid]["state"][i][1] = value
-                if len(data[uid]["state"][i]) >= 3:
-                    if mode == 'add':
-                        level += data[uid]["state"][i][2]
-                    if level > 1145141919810:
-                        level = 1145141919810
-                        str += "等级过高,更改为1145141919810\n"
-                    data[uid]["state"][i][2] = level
-                else:
-                    data[uid]["state"][i].insert(2,level)
-                if data[uid]["state"][i][2] <= 0:
-                    del data[uid]["state"][i]
-                b = True
-                break
-        if not b:
-            data[uid]["state"].append([id,value,level])
-        str += f"获得状态：{dicts.state_dict[id]}（等级：{level}）（ID：{id}）（持续时间：{(int)(value - time())}秒）\n"
-        return str
+        """不再需要，留空避免报错"""
+        pass
