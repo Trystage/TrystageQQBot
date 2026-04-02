@@ -148,11 +148,15 @@ async def on_connect(websocket, path):
 async def main():
     # 初始化数据文件
     FileUtils.initialize_data_files()
-    
-    start_server = await websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT)
-    print("WebSocket 服务器已启动")
-    print(f"运行在ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}/ws")
-    await start_server.wait_closed()
 
+    print("WebSocket 服务器已启动")
+    print(f"运行在ws://{WEBSOCKET_HOST}:{WEBSOCKET_PORT}")
+    async with websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT):
+        await asyncio.Future()  # 永久运行
+    # start_server = await websockets.serve(on_connect, WEBSOCKET_HOST, WEBSOCKET_PORT)
+    # await start_server.wait_closed()
+
+if __name__ == "__main__":
+    asyncio.run(main())
 if __name__ == "__main__":
     asyncio.run(main())
